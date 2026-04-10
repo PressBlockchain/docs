@@ -1,0 +1,248 @@
+---
+title: ABI Registry
+description: How to fetch ABIs, the integration priority order, and confirmed method signatures for each contract.
+icon: brackets-curly
+---
+
+## Fetch ABIs at Runtime
+
+Always fetch ABIs from Bridge — they stay current with contract redeployments:
+
+```typescript
+async function getABI(contractName: string) {
+  const res = await fetch(
+    `https://bridge.presschain.io/abis/${contractName}`
+  );
+  if (!res.ok) throw new Error(`ABI not found: ${contractName}`);
+  const { abi } = await res.json();
+  return abi;
+}
+
+// Batch fetch for a full integration setup
+const [registryABI, acceptanceABI, bondABI, membershipABI] = await Promise.all([
+  getABI("ArticleRegistry"),
+  getABI("CapsuleAcceptance"),
+  getABI("BondManager"),
+  getABI("OutletMembership"),
+]);
+```
+
+<Tip>
+In production, cache fetched ABIs during your build step — don't fetch on every page load. ABIs only change on contract redeployments, which are announced via `status.presschain.io`.
+</Tip>
+
+---
+
+## Integration Priority Order
+
+Implement contracts in this order. Higher priority = called more frequently in typical outlet and journalist workflows.
+
+<Steps>
+  <Step title="ArticleRegistry — Submit and query Capsules">
+    Every publishing integration starts here.
+
+    ```bash
+    GET https://bridge.presschain.io/abis/ArticleRegistry
+    ```
+
+    Key methods:
+    ```solidity
+    function submitCapsule(
+      string calldata outletSlug,
+      string calldata articleSlug,
+      string calldata metadataURI,
+      bytes32 contentHash,
+      uint256 policyId
+    ) external returns (uint256 capsuleId)
+
+    function finalizeCapsule(uint256 capsuleId) external
+    function capsuleCount() view returns (uint256)
+    ```
+  </Step>
+
+  <Step title="CapsuleAcceptance — Voting engine">
+    Cast votes, query vote state, trigger finalization.
+
+    ```bash
+    GET https://bridge.presschain.io/abis/CapsuleAcceptance
+    ```
+
+    Key methods:
+    ```solidity
+    function vote(uint256 capsuleId, bool support) external
+
+    function getVoteState(uint256 capsuleId) view returns (
+      uint256 yesVotes,
+      uint256 noVotes,
+      uint256 weightedYes,
+      uint256 weightedNo,
+      uint256 participation,
+      bool finalized,
+      bool accepted
+    )
+
+    function isVotingOpen(uint256 capsuleId) view returns (bool)
+    ```
+  </Step>
+
+  <Step title="OutletMembership — Outlet onboarding and bond state">
+    Required for any outlet-level operation.
+
+    ```bash
+    GET https://bridge.presschain.io/abis/OutletMembership
+    ```
+
+    Key methods:
+    ```solidity
+    function isOutletActive(string calldata slug) view returns (bool)
+
+    function getOutletBond(string calldata slug) view returns (
+      uint256 bondedAmount,
+      uint256 lockedUntil,
+      bool active
+    )
+    ```
+  </Step>
+
+  <Step title="OutletRoleShop — Role purchases at outlet level">
+    ```bash
+    GET https://bridge.presschain.io/abis/OutletRoleShop
+    ```
+  </Step>
+
+  <Step title="BondManager — Protocol-level bond management">
+    ```bash
+    GET https://bridge.presschain.io/abis/BondManager
+    ```
+
+    Confirmed live methods:
+    ```solidity
+    function minimumBondByRole(uint8 role) view returns (uint256)
+    function isRoleActive(address wallet, uint8 role) view returns (bool)
+
+    function getRoleBond(address wallet, uint8 role) view returns (
+      uint8 role,
+      uint8 state,
+      uint256 bondedAmount,
+      uint256 minimumRequired,
+      uint256 activatedAt,
+      uint256 updatedAt
+    )
+
+    function dissolutionFeeBps() view returns (uint16)
+    function depositBond(uint8 role) payable
+    function dissolveBond(uint8 role)
+    ```
+  </Step>
+
+  <Step title="RoleManager — Global role assignment and verification">
+    ```bash
+    GET https://bridge.presschain.io/abis/RoleManager
+    ```
+  </Step>
+
+  <Step title="SourceRegistry — Source identity registration">
+    ```bash
+    GET https://bridge.presschain.io/abis/SourceRegistry
+    ```
+  </Step>
+
+  <Step title="tPRESS — ERC-20 token">
+    ```bash
+    GET https://bridge.presschain.io/abis/tPRESS
+    ```
+
+    Standard ERC-20:
+    ```solidity
+    function balanceOf(address account) view returns (uint256)
+    function transfer(address to, uint256 amount) returns (bool)
+    function approve(address spender, uint256 amount) returns (bool)
+    function allowance(address owner, address spender) view returns (uint256)
+    function transferFrom(address from, address to, uint256 amount) returns (bool)
+    ```
+  </Step>
+
+  <Step title="PressGovernance — Governance proposals">
+    ```bash
+    GET https://bridge.presschain.io/abis/PressGovernance
+    ```
+  </Step>
+
+  <Step title="PressFeeRouter / PressTreasury — Fee distribution">
+    ```bash
+    GET https://bridge.presschain.io/abis/PressFeeRouter
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Full Integration Setup Pattern
+
+```typescript
+import { JsonRpcProvider, Contract } from "ethers";
+
+const BRIDGE = "https://bridge.presschain.io";
+const RPC    = "https://rpc.presschain.io";
+
+const ADDRESSES = {
+  ArticleRegistry:   "0x121885Cd339BF495cbC63e0f49e16c7CB2A1C62a",
+  CapsuleAcceptance: "0x63D0c0b51a3856a539b36a909517a18BddDb4a32",
+  OutletMembership:  "0x9084c7bE0F49b71f0eEa840C9c0A18F6321073fF",
+  BondManager:       "0x4b39edF3fA0e7DBAFFA45FDCBbE08B6681D1076b",
+  tPRESS:            "0xe1cC4228c29cb4e1Ff4B836f445b7ee3FBb04e32",
+} as const;
+
+async function initContracts() {
+  const provider = new JsonRpcProvider(RPC);
+
+  // Fetch all ABIs in parallel
+  const abis = await Promise.all(
+    Object.keys(ADDRESSES).map(async (name) => {
+      const res = await fetch(`${BRIDGE}/abis/${name}`);
+      const { abi } = await res.json();
+      return [name, abi] as const;
+    })
+  );
+
+  const abiMap = Object.fromEntries(abis);
+
+  return {
+    articleRegistry: new Contract(ADDRESSES.ArticleRegistry,   abiMap.ArticleRegistry,   provider),
+    acceptance:      new Contract(ADDRESSES.CapsuleAcceptance, abiMap.CapsuleAcceptance, provider),
+    membership:      new Contract(ADDRESSES.OutletMembership,  abiMap.OutletMembership,  provider),
+    bondManager:     new Contract(ADDRESSES.BondManager,       abiMap.BondManager,       provider),
+    tpress:          new Contract(ADDRESSES.tPRESS,            abiMap.tPRESS,            provider),
+  };
+}
+
+// Usage
+const contracts = await initContracts();
+
+// Read capsule count
+const count = await contracts.articleRegistry.capsuleCount();
+console.log("Total capsules:", count.toString());
+
+// Check voting is open
+const open = await contracts.acceptance.isVotingOpen(247n);
+console.log("Voting open:", open);
+
+// Check bond
+const bonded = await contracts.bondManager.isRoleActive("0xADDRESS", 2);
+console.log("Reporter bond active:", bonded);
+```
+
+---
+
+## Available ABI Names
+
+```bash
+# List all available ABIs from Bridge
+curl https://bridge.presschain.io/meta/contracts-summary | jq '.contracts | keys'
+
+# Confirmed available:
+# ArticleRegistry, CapsuleAcceptance, OutletMembership,
+# OutletRegistry, OutletFactory, OutletRoleShop,
+# BondManager, RoleManager, SourceRegistry,
+# tPRESS, PressGovernance, PressFeeRouter
+```

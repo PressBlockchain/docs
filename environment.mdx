@@ -1,0 +1,131 @@
+---
+title: Environment Variables
+description: Complete reference for all environment variables across Bridge, SDK, outlet creation, and Next.js apps.
+icon: gear
+---
+
+<Warning>
+Never commit secrets to version control. The `PRESSCHAIN_DEPLOYER_KEY` must be treated as a root credential — store it in a hardware wallet or secrets manager.
+</Warning>
+
+## Next.js Apps (Portal, Court, Status, etc.)
+
+```bash
+# Network
+NEXT_PUBLIC_CHAIN_NAME=PressChain Testnet
+NEXT_PUBLIC_CHAIN_ID=77117002
+NEXT_PUBLIC_MAINNET_CHAIN_ID=77117001
+NEXT_PUBLIC_RPC_URL=https://rpc.presschain.io
+NEXT_PUBLIC_TESTNET_RPC_URL=https://testnet-rpc.presschain.io
+
+# Services
+NEXT_PUBLIC_EXPLORER_URL=https://explorer.presschain.io
+NEXT_PUBLIC_BRIDGE_URL=https://bridge.presschain.io
+NEXT_PUBLIC_STATUS_URL=https://status.presschain.io
+NEXT_PUBLIC_DOCS_URL=https://docs.presschain.io
+NEXT_PUBLIC_FAUCET_URL=https://faucet.presschain.io
+NEXT_PUBLIC_PORTAL_URL=https://portal.presschain.io
+NEXT_PUBLIC_PRESSKEY_URL=https://key.presschain.io
+NEXT_PUBLIC_PRESSCHAIN_LOGO=https://presschain.io/press-logo.png
+NEXT_PUBLIC_SUPPORT_EMAIL=support@presschain.io
+NEXT_PUBLIC_DEFAULT_OUTLET=presshash
+
+# Feature flags
+NEXT_PUBLIC_ENABLE_DEMO_MODE=true
+NEXT_PUBLIC_ENABLE_TEST_MODE=true
+NEXT_PUBLIC_ENABLE_FAUCET=true
+NEXT_PUBLIC_ENABLE_DISPUTES=true
+NEXT_PUBLIC_ENABLE_RIGHTS=true
+NEXT_PUBLIC_ENABLE_SUPPORTING_CAPSULES=true
+NEXT_PUBLIC_ENABLE_CAPSULE_EXPORTS=true
+NEXT_PUBLIC_ENABLE_HISTORY_EXPORTS=true
+NEXT_PUBLIC_ENABLE_OUTLET_ADMIN=true
+NEXT_PUBLIC_ENABLE_ROLE_MANAGEMENT=true
+
+# Contract addresses (use live values — zeros = placeholder)
+NEXT_PUBLIC_CAPSULE_ACCEPTANCE_CONTRACT=0x63D0c0b51a3856a539b36a909517a18BddDb4a32
+NEXT_PUBLIC_ARTICLE_REGISTRY_CONTRACT=0x121885Cd339BF495cbC63e0f49e16c7CB2A1C62a
+NEXT_PUBLIC_OUTLET_REGISTRY_CONTRACT=0xA61490ab3126Cb792c1D7021395db396e4DC2652
+NEXT_PUBLIC_RIGHTS_REGISTRY_CONTRACT=0x0000000000000000000000000000000000000000
+NEXT_PUBLIC_COURT_REGISTRY_CONTRACT=0x0000000000000000000000000000000000000000
+NEXT_PUBLIC_ROLE_MANAGER_CONTRACT=0xc7A978851835F619EE1DCc58D5C86bf9BEBF80C0
+NEXT_PUBLIC_VALIDATOR_REGISTRY_CONTRACT=0x0000000000000000000000000000000000000000
+NEXT_PUBLIC_TREASURY_CONTRACT=0x0000000000000000000000000000000000000000
+```
+
+## Bridge API Server
+
+```bash
+# Auth & CORS
+BRIDGE_API_KEY=your_bridge_api_key_here
+ALLOWED_ORIGIN=https://portal.presschain.io
+
+# Chain
+CHAIN_ID=77117002
+PRESSCHAIN_RPC_URL=https://rpc.presschain.io
+RPC_URL=https://rpc.presschain.io
+
+# Server
+PORT=3001
+NODE_ENV=production
+```
+
+## Bridge SDK Service
+
+```bash
+PRIMARY_OUTLET_NAME=The Bay Tribune
+PRIMARY_OUTLET_SLUG=the-bay-tribune
+PRIMARY_OUTLET_WALLET=0xOutletWalletAddress
+PRIMARY_PRESSKEY_ADDRESS=0xPressKeyAddress
+```
+
+## Outlet Creation Script
+
+```bash
+OUTLET_ADMIN=0xAdminWalletAddress
+OUTLET_METADATA_URI=ipfs://Qm...
+OUTLET_NAME=The Bay Tribune
+OUTLET_SLUG=the-bay-tribune
+```
+
+## Chain / Service Helpers
+
+```bash
+# ⚠ Critical — treat as root credential
+PRESSCHAIN_DEPLOYER_KEY=0xYOUR_PRIVATE_KEY
+PRESSCHAIN_RPC_URL=https://rpc.presschain.io
+```
+
+## WordPress SYNC Plugin
+
+```php
+define('PRESSCHAIN_BRIDGE_URL',        'https://bridge.presschain.io');
+define('PRESSCHAIN_OUTLET_SLUG',       'the-bay-tribune');
+define('PRESSCHAIN_API_KEY',           'presskey_session_token');
+define('PRESSCHAIN_AUTO_STAGE',         true);
+define('PRESSCHAIN_DEFAULT_POLICY_ID',  '1');
+define('PRESSCHAIN_PRESS_FEED_ENABLED', true);
+define('PRESSCHAIN_RIGHTS_ENABLED',     false);
+define('PRESSCHAIN_ADS_ENABLED',        false);
+```
+
+## Security Classification
+
+| Variable | Level | Rotation |
+|---|---|---|
+| `PRESSCHAIN_DEPLOYER_KEY` | 🔴 Critical | Rarely — with full protocol notice |
+| `BRIDGE_API_KEY` | 🟠 Secret | Monthly or on compromise |
+| `PRESSCHAIN_API_KEY` (SYNC) | 🟠 Secret | On session expiry |
+| `NEXT_PUBLIC_*` | 🟢 Public | Only on network/contract changes |
+| `CHAIN_ID`, `RPC_URL` | 🟢 Public | Only on network change |
+
+## Live Config Verification
+
+```bash
+# Verify current live env state
+curl https://bridge.presschain.io/meta/env-keys
+curl https://bridge.presschain.io/meta/canonical-env
+curl https://bridge.presschain.io/meta/contracts-summary
+```
+
+These return the current runtime environment from the Bridge service — useful for confirming deployed config matches expected state after any change.

@@ -1,0 +1,153 @@
+---
+title: Acceptance Engine
+description: Voting weight formula, quorum logic, anti-spam controls, and finalization flow.
+icon: check-to-slot
+---
+
+## Two Conditions, Both Required
+
+```
+Weighted Approval ≥ 60%
+        AND
+Participation Quorum ≥ 5% of total eligible weighted supply
+        WITHIN
+72-hour voting window
+```
+
+If quorum is not reached, the Capsule is **automatically rejected** — regardless of how many votes were cast or how they split. This prevents low-attention approvals.
+
+## Weight Formula
+
+```
+Voting Weight = Base Role Weight × Reputation Multiplier × Bond Stability Factor
+```
+
+### Base Role Weights
+
+| Role | Weight |
+|---|---|
+| Citizen | 1 |
+| Contributor | 2 |
+| Reporter | 3 |
+| Verified Author | 4 |
+| Media Validator | 4 |
+
+### Reputation Multiplier — 0.5 → 2.0
+
+Driven by: participation rate, alignment with final court outcomes, spam flags, inactivity.
+
+### Bond Stability Factor — 1.0 → 1.15
+
+| Bond Duration | Factor |
+|---|---|
+| 0–30 days | 1.00 |
+| 30–90 days | 1.03 |
+| 90–180 days | 1.07 |
+| 180–365 days | 1.11 |
+| 365+ days | 1.15 |
+
+Prevents stake-and-vote manipulation. Short-term bonders earn no stability premium.
+
+## Effective Weight Example
+
+```typescript
+// Reporter, 1.7 reputation, 1.10 stability (6 months bonded)
+const effective = 3 * 1.7 * 1.10; // = 5.61
+```
+
+## Vote State Query
+
+```typescript
+import { Contract, JsonRpcProvider } from "ethers";
+
+const ABI = [
+  "function isVotingOpen(uint256 capsuleId) view returns (bool)",
+  "function getVoteState(uint256 capsuleId) view returns (uint256, uint256, uint256, uint256, uint256, bool, bool)",
+];
+
+const acceptance = new Contract(
+  "0x63D0c0b51a3856a539b36a909517a18BddDb4a32",
+  ABI,
+  new JsonRpcProvider("https://rpc.presschain.io")
+);
+
+const open = await acceptance.isVotingOpen(capsuleId);
+const [yesVotes, noVotes, weightedYes, weightedNo, participation, finalized, accepted]
+  = await acceptance.getVoteState(capsuleId);
+
+const approvalRate = Number(weightedYes) / (Number(weightedYes) + Number(weightedNo));
+```
+
+Or via Bridge (recommended):
+
+```bash
+GET https://bridge.presschain.io/capsules/:id
+```
+
+```json
+{
+  "status": "pending",
+  "weightedYes": 3750,
+  "weightedNo": 500,
+  "weightedParticipation": 4250,
+  "opensAt": "1704153600",
+  "closesAt": "1704412800"
+}
+```
+
+## Voting Flow (Integration)
+
+```typescript
+// 1. Request PressKey signature
+const { signature, sessionToken } = await window.presskey.request({
+  action: "SUBMIT_VOTE",
+  capsuleId: "247",
+  support: true,
+});
+
+// 2. Submit to Bridge
+const res = await fetch("https://bridge.presschain.io/capsules/247/accept", {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${sessionToken}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ capsuleId: "247", support: true, signature }),
+});
+```
+
+## Finalization
+
+After the 72-hour window closes, finalization can be triggered:
+
+```bash
+POST https://bridge.presschain.io/capsules/:id/accept
+Authorization: Bearer <token>
+{ "capsuleId": "247" }
+```
+
+Finalization records acceptance on-chain and activates distribution. If both thresholds were met, the capsule becomes canonical. If not, it's rejected.
+
+## Anti-Spam Controls
+
+| Control | Behavior |
+|---|---|
+| Daily vote cap (Citizen) | Strict limit per day per account |
+| Per-topic throttle | Auto-reduced rate during coordinated attacks |
+| PressKey required | No anonymous voting — every vote is signed |
+| Reputation gate | Expanded privileges require earned reputation |
+| Bond stability | Flash-stake-and-vote earns no weight bonus |
+
+## Rejection Handling
+
+```bash
+# Query rejection reason
+GET https://bridge.presschain.io/capsules/:id
+
+# capsule.status === "rejected"
+# Check weightedYes, weightedNo, weightedParticipation
+# Low participation → quorum failure
+# Low weightedYes → approval failure
+```
+
+Rejected Capsules can be revised and resubmitted. The revision goes through acceptance fresh with its own 72-hour window.

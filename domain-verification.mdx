@@ -1,0 +1,67 @@
+---
+title: Domain Verification
+description: How to prove your outlet owns its domain — DNS setup, common providers, and how to recover from suspension.
+icon: globe
+---
+
+## Why Domain Verification Exists
+
+Your outlet's domain is part of its on-chain identity. Verification proves you control the domain you're publishing under — preventing impersonation and tying your outlet's web presence to its protocol record.
+
+If `baytribune.com` is a verified outlet on PressChain, someone can't create a fake `bay-tribune.com` outlet and impersonate The Bay Tribune on the protocol.
+
+## How It Works
+
+After paying your outlet's onboarding fee and bond, the Portal generates a unique verification token. You add that token as a DNS TXT record on your domain. PressChain checks for it.
+
+```
+Your verification token: presschain-verify=abc123def456...
+
+Add to DNS:
+  Type:  TXT
+  Host:  @
+  Value: presschain-verify=abc123def456...
+  TTL:   3600
+```
+
+Once the TXT record is live and PressChain detects it, your outlet becomes `active`.
+
+## Step by Step
+
+<Steps>
+  <Step title="Get your token">
+    Portal → **Outlet** → **Domain Verification** — your token is displayed here. It never changes unless you specifically reset it.
+  </Step>
+  <Step title="Add the TXT record">
+    Log into your DNS provider and add a TXT record. Here's where to find it in common providers:
+
+    | Provider | Path |
+    |---|---|
+    | Cloudflare | DNS → Records → Add TXT |
+    | Namecheap | Domain List → Manage → Advanced DNS → TXT |
+    | GoDaddy | DNS → Add Record → TXT |
+    | Route 53 | Hosted Zones → Zone → Create Record |
+    | Porkbun | DNS → Edit Records → TXT |
+  </Step>
+  <Step title="Wait for propagation">
+    DNS changes typically take 5–30 minutes to propagate, occasionally up to 48 hours. You can verify the record is live from the command line:
+
+    ```bash
+    dig TXT yourdomain.com | grep presschain
+    # → yourdomain.com. 3600 IN TXT "presschain-verify=abc123..."
+    ```
+  </Step>
+  <Step title="Click Verify in Portal">
+    Portal → **Domain Verification** → **Check Now**. Once confirmed, your outlet status changes to `active`.
+  </Step>
+</Steps>
+
+## If Verification Lapses
+
+PressChain monitors your domain continuously. If the TXT record disappears (after a DNS migration, provider change, or accidental deletion), your outlet moves to `domain_suspended`:
+
+- New Capsule submissions are blocked
+- Existing canonical Capsules remain unchanged
+- Distribution is paused
+
+To restore: re-add the TXT record, wait for propagation, click **Re-verify** in the Portal. After a 24-hour stabilization window, your outlet returns to `active`.

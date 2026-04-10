@@ -1,0 +1,151 @@
+---
+title: Capsule Lifecycle
+description: State machine, revision lineage, economic routing, and distribution activation.
+icon: rotate
+---
+
+## State Machine
+
+```
+DRAFT (staged, not yet submitted)
+    │
+    ▼ submitCapsule()
+PENDING (voting window open — 72h)
+    │
+    ├── Thresholds met → ACCEPTED
+    │       │
+    │       ▼ finalizeCapsule()
+    │   FINALIZED (canonical, distribution active)
+    │       │
+    │       ├── Challenged → CONTESTED (court case open)
+    │       │       │
+    │       │       └── Verdict → integrity label applied
+    │       │                    VERIFIED | MISLEADING | FRAUDULENT
+    │       │
+    │       └── Correction submitted → SUPERSEDED
+    │               (new PENDING correction Capsule)
+    │
+    └── Thresholds not met → REJECTED
+            │
+            └── Can revise and resubmit
+```
+
+## Revision Lineage
+
+Corrections never erase originals. They create a chain:
+
+```typescript
+// Original capsule
+capsule #247: {
+  status: "superseded",
+  rootCapsuleId: "247",
+  parentCapsuleId: null,
+  revisionNumber: 0
+}
+
+// Correction capsule
+capsule #289: {
+  status: "finalized",
+  rootCapsuleId: "247",    // always points to original
+  parentCapsuleId: "247",  // direct parent
+  revisionNumber: 1,
+  revisionReason: "Vote count corrected from 6-3 to 7-2",
+  currentCapsuleId: "289"  // authoritative version
+}
+```
+
+Querying lineage:
+
+```bash
+GET https://bridge.presschain.io/capsules/:id/history
+```
+
+```json
+{
+  "rootCapsuleId": "247",
+  "currentCapsuleId": "289",
+  "chain": [
+    { "capsuleId": "247", "revisionNumber": 0, "status": "superseded" },
+    { "capsuleId": "289", "revisionNumber": 1, "status": "finalized" }
+  ]
+}
+```
+
+## Economic Routing at Submission
+
+Publish fee: **30 PRESS base**
+
+```
+30 PRESS
+├── 35% → Validators          (10.5 PRESS)
+├── 20% → Burn Pool           ( 6.0 PRESS)
+├── 15% → Media Validators    ( 4.5 PRESS)
+├── 10% → Integrity Treasury  ( 3.0 PRESS)
+├── 10% → Vault Operators     ( 3.0 PRESS)
+└── 10% → Foundation          ( 3.0 PRESS)
+```
+
+This routing is deterministic and on-chain logged. No discretion.
+
+## Distribution Activation
+
+Distribution activates only after `FINALIZED` state. Factors:
+
+| Factor | How to Improve |
+|---|---|
+| Integrity score | Maintain clean/verified labels |
+| Acceptance rate | Consistent, well-evidenced Capsules |
+| Bond stability | Long-term bonded roles |
+| Summons response | Respond to all court summons |
+| Role tenure | Longer active bonding |
+
+## Distribution Tiers
+
+| Tier | Requirements | Benefits |
+|---|---|---|
+| Standard | Active outlet | Press Network, basic feeds |
+| Elevated | 75%+ acceptance, clean record | Higher feed position, more channels |
+| Premium | 90%+ acceptance, 12+ months active | All channels, partner stream priority |
+
+## Brand Separation Fee
+
+If an outlet disables the Press Network feed module:
+
+```
+Fee charged → PRESS burned
+Distribution downgrade applied
+Public log entry written on-chain
+```
+
+This is automatic and cannot be appealed except through governance.
+
+## Supporting Capsules
+
+Capsules can reference other Capsules as supporting context:
+
+```bash
+POST /capsules/:id/supporting
+{ "supportingCapsuleId": "190", "relationshipType": "corroborates" }
+
+GET /capsules/:id/supporting
+# → array of related capsule IDs and relationship types
+```
+
+## Key Lifecycle Timestamps
+
+```typescript
+// Parse all timestamps (stored as Unix strings)
+const capsule = await getCapsule("247");
+
+const opensAt  = new Date(Number(capsule.opensAt)  * 1000);
+const closesAt = new Date(Number(capsule.closesAt) * 1000);
+const accepted = capsule.acceptedAt
+  ? new Date(Number(capsule.acceptedAt) * 1000)
+  : null;
+
+// Time remaining in voting window
+const now = Date.now();
+const remaining = closesAt.getTime() - now;
+const hoursLeft = Math.max(0, remaining / 3_600_000).toFixed(1);
+console.log(`${hoursLeft}h remaining`);
+```

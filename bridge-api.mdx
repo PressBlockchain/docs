@@ -1,0 +1,245 @@
+---
+title: Bridge API
+description: Full route reference for the PressChain Bridge API — the primary integration surface for all outlet and dApp development.
+icon: webhook
+---
+
+```
+Base URL:  https://bridge.presschain.io
+Auth:      Bearer <presskey_session_token>  (write routes only)
+Format:    application/json
+```
+
+## Health & Config
+
+```bash
+GET /health
+# → {"status":"ok","service":"presschain-bridge","network":"PressChain Testnet","chainId":77117002}
+
+GET /config
+# → {"service":"presschain-bridge","network":"PressChain Testnet","chainId":77117002,"rpcUrl":"..."}
+
+GET /network/status
+```
+
+---
+
+## Capsule Routes
+
+### Read
+
+```bash
+# List capsules (paginated)
+GET /capsules?page=1&limit=20&outlet=presshash&status=accepted
+
+# Full capsule — Rust API shape (evidence, contributors, revision, policy)
+GET /capsules/:id
+
+# Lightweight vote state summary
+GET /capsules/:id
+# (same route — check capsule.status, weightedYes, weightedNo, participation)
+
+# Capsule history / revision lineage
+GET /capsules/:id/history
+
+# Evidence manifest
+GET /capsules/:id/evidence
+
+# Supporting capsules
+GET /capsules/:id/supporting
+
+# Disputes on a capsule
+GET /capsules/:id/disputes
+
+# Rights info
+GET /capsules/:id/rights
+```
+
+### Write (Bearer Auth Required)
+
+```bash
+# Create a new Capsule
+POST /capsules/create
+
+# Update a staged Capsule
+POST /capsules/update
+
+# Add to revision history
+POST /capsules/:id/history
+
+# Add supporting Capsule
+POST /capsules/:id/supporting
+
+# Add evidence item
+POST /capsules/:id/evidence
+
+# File a dispute
+POST /capsules/:id/dispute
+
+# Accept a Capsule (finalize after vote window)
+POST /capsules/:id/accept
+
+# Reject / close a Capsule
+POST /capsules/:id/reject
+```
+
+### Example Capsule Payload
+
+```json
+{
+  "title": "City Council Approves $42M Infrastructure Budget",
+  "category": "local",
+  "tags": ["government", "infrastructure", "budget"],
+  "sourceUrl": "https://thedailypress.com/city-council-budget-2024",
+  "body": "The city council voted 7-2 on Tuesday to approve...",
+  "outletSlug": "the-daily-press",
+  "authorWallet": "0xJournalistAddress",
+  "rightsNotes": "Owned by The Daily Press. Standard commercial licensing.",
+  "supportingCapsules": [],
+  "evidence": [
+    {
+      "uri": "https://archive.org/save/https://council.gov/meeting-jan-9",
+      "contentHash": "0x...",
+      "evidenceType": "archived_page",
+      "mimeType": "text/html",
+      "isPrimary": true,
+      "label": "Council session archive — Jan 9 2024"
+    }
+  ],
+  "status": "draft"
+}
+```
+
+---
+
+## Outlet Routes
+
+```bash
+# List all outlets
+GET /outlets?status=active&page=1&limit=20
+
+# Get outlet by slug
+GET /outlets/:slug
+
+# Get outlet members with roles
+GET /outlets/:slug/users
+
+# Create a new outlet
+POST /outlets/create
+
+# Verify outlet domain
+POST /outlets/verify
+```
+
+---
+
+## Role & Identity Routes
+
+```bash
+# Role catalog with current bond requirements
+GET /role-catalog
+
+# Roles for a wallet + outlet combo
+GET /roles/:wallet/:outletSlug
+
+# Full wallet activity history
+GET /wallet/:address/activity
+
+# All roles held by a wallet
+GET /wallet/:address/roles
+
+# Grant a role
+POST /roles/grant
+
+# Revoke a role
+POST /roles/revoke
+```
+
+---
+
+## Rights & Ads
+
+```bash
+GET /rights/listings
+GET /capsules/:id/rights
+POST /rights/create
+POST /rights/license
+
+GET /ads/campaigns
+GET /capsules/:id/ads   # via /ads/:capsuleId
+```
+
+---
+
+## Court
+
+```bash
+GET /court/cases?status=active&outlet=presshash
+GET /court/case/:id
+```
+
+---
+
+## Burn & Vault
+
+```bash
+GET /burn/status
+# → {"poolSize":"...","nextBurnDate":"...","lastBurnAmount":"...","totalBurned":"..."}
+
+GET /vault/:objectId
+```
+
+---
+
+## Operator Metadata
+
+```bash
+GET /meta/contracts-summary   # all addresses + env state
+GET /meta/env-keys            # current env key inventory
+GET /meta/action-keys         # PressKey action names
+GET /meta/canonical-env       # full canonical environment
+```
+
+---
+
+## Apache Proxy Pattern
+
+For any service you're proxying through Apache:
+
+```apache
+ProxyPreserveHost On
+ProxyPass / http://127.0.0.1:PORT/
+ProxyPassReverse / http://127.0.0.1:PORT/
+RequestHeader set X-Forwarded-Proto "https"
+```
+
+Proxy configs live at:
+```
+/etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/portal.presschain.io/proxy.conf
+/etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/court.presschain.io/proxy.conf
+/etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/status.presschain.io/proxy.conf
+```
+
+---
+
+## Error Responses
+
+```json
+{
+  "ok": false,
+  "error": "CAPSULE_NOT_FOUND",
+  "message": "No capsule found with ID 999",
+  "statusCode": 404
+}
+```
+
+Common codes: `UNAUTHORIZED`, `INVALID_SIGNATURE`, `CAPSULE_NOT_FOUND`, `VOTING_CLOSED`, `OUTLET_NOT_ACTIVE`, `INSUFFICIENT_BOND`
+
+## Rate Limits
+
+| Category | Limit |
+|---|---|
+| Public GET | 100 req/min per IP |
+| Authenticated write | 20 req/min per session |
+| Submit capsule | 5/hour per outlet |
+| Vote | 50/hour per session |

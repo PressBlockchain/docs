@@ -1,0 +1,156 @@
+---
+title: Evidence & Sources
+description: How to protect your journalism with committed evidence — what counts, how to archive it, and why hashing matters.
+icon: file-shield
+---
+
+## Why Evidence Is Different on PressChain
+
+When you publish on a normal website, your sources are whatever you wrote. Someone disputes your story — you might have the documents, you might not. The document might have disappeared from the government website. Your archived screenshot lives in a folder on your laptop.
+
+On PressChain, your evidence is **locked in at the moment you publish.** Every document, archive, transcript, and photo is hashed with SHA-256 and that hash is stored permanently on-chain. Anyone — a reader, a juror, an editor — can verify your evidence is unchanged.
+
+If someone claims your source doesn't exist, you can prove it did. If they claim you misrepresented a document, the original is permanently verifiable.
+
+---
+
+## Real Scenario: Marcus's Environmental Investigation
+
+Marcus Webb is documenting illegal chemical dumping near a protected wetland. Before he publishes, he gathers:
+
+| Evidence | Type | Notes |
+|---|---|---|
+| City permit application (PDF) | `document` | Primary — proves permits were granted despite warnings |
+| Government inspection report | `document` | Primary — Category B violations on record |
+| Archive of the permit page | `archived_page` | Proves the page existed before it was taken down |
+| His own site photos | `media` | Supporting — shows physical evidence |
+| Source interview transcript | `transcript` | Supporting — protects source while preserving record |
+
+When Marcus submits his Capsule, each of these is:
+1. Uploaded to the Vault Network
+2. Hashed with SHA-256
+3. Hash committed to PressChain permanently
+
+Six months later, the city's legal team claims Marcus fabricated the inspection report. Marcus opens the Capsule on the Explorer, pulls the evidence hash, downloads the file from the Vault, hashes it — they match. The report existed at the time he published. The claim is disproven.
+
+---
+
+## Evidence Types
+
+<AccordionGroup>
+  <Accordion title="Archived Page" icon="archive">
+    A web page saved at the exact moment of your reporting. Use Archive.org's Wayback Machine or the Save Now tool to create a permanent snapshot of any URL.
+
+    **When to use:** Government pages, company websites, social media posts — anything that might be edited or deleted.
+
+    **Best practice:** Archive source pages the moment you access them for reporting, not after you publish. Pages can disappear quickly.
+  </Accordion>
+  <Accordion title="Document" icon="file">
+    Court filings, government records, internal documents, public reports, regulatory filings.
+
+    **When to use:** Any formal document that forms the basis of your reporting.
+
+    **Best practice:** Upload the original file, not a screenshot. PDFs are ideal. Hash the file itself, not a photo of it.
+  </Accordion>
+  <Accordion title="Transcript" icon="microphone">
+    Interview transcripts, meeting minutes, call records, email chains.
+
+    **When to use:** When you have on-record sources whose words directly support your claims.
+
+    **Protecting sources:** You can redact identifying information before uploading. The redacted version is what gets hashed — what you upload is what's committed. Never upload raw transcripts that would identify a confidential source.
+  </Accordion>
+  <Accordion title="Media" icon="photo-film">
+    Photos, video, audio recordings.
+
+    **When to use:** Visual documentation that supports your reporting.
+
+    **Note:** Large video files may have higher Vault storage costs. For video, consider uploading a key still and linking to the full video.
+  </Accordion>
+  <Accordion title="Data" icon="table">
+    Spreadsheets, datasets, statistical files that support data journalism.
+
+    **When to use:** When your analysis is based on a specific dataset.
+
+    **Best practice:** Upload the exact dataset you used in your analysis, not a cleaned version. If you cleaned it, upload both.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Primary vs. Supporting Evidence
+
+Every evidence item is marked as **Primary** or **Supporting**:
+
+- **Primary** — the core evidence that directly proves your main claims. You should always have at least one primary item.
+- **Supporting** — context, corroboration, background. Strengthens the case but isn't the central proof.
+
+Jurors in court cases pay closest attention to primary evidence. Be deliberate about what you mark as primary.
+
+---
+
+## How to Archive Web Pages
+
+The best practice is to use [web.archive.org](https://web.archive.org/save) to create a permanent snapshot before you publish:
+
+1. Go to `https://web.archive.org/save/`
+2. Paste the URL you want to preserve
+3. Click **Save Page Now**
+4. Copy the resulting archive URL (e.g., `https://web.archive.org/web/20240112.../https://citycouncil.gov/agenda`)
+5. Submit this archive URL as your evidence URI in PressChain
+
+The archive URL is what you attach. When it's hashed and committed, anyone can visit that URL and see exactly what the page looked like when you reported.
+
+---
+
+## What Happens to Your Evidence
+
+```
+You upload: city-permit-report.pdf
+
+PressChain:
+1. Sends file to Vault Network (secure distributed storage)
+2. Computes SHA-256 hash: 0x9f86d081...
+3. Stores hash on-chain permanently (not the file — the proof)
+
+Vault Network:
+- Stores file with redundancy
+- Periodically proves availability to the protocol
+- Vault operators are bonded — failures carry financial penalties
+
+Anyone later:
+1. Downloads file from Vault: city-permit-report.pdf
+2. Computes SHA-256: 0x9f86d081...
+3. Compares to on-chain hash: ✓ Match = unchanged
+```
+
+---
+
+## Protecting Confidential Sources
+
+PressChain does not require you to expose source identities. You have options:
+
+- **Redact before uploading** — remove identifying information from transcripts
+- **Upload summaries** — describe what a source told you without the raw transcript
+- **Omit source documents** — you don't have to upload every piece of evidence. Not having evidence isn't the same as fabrication.
+- **Use journalist device signatures** — optional metadata proving your device was present, without revealing who you talked to
+
+When the Court reviews evidence, jurors see what you uploaded — not your notes or communications you didn't attach. Your editorial judgment about what to include is respected.
+
+---
+
+## Evidence Best Practices Summary
+
+<CardGroup cols={2}>
+  <Card title="Archive immediately" icon="clock" color="#009BF9">
+    Save source pages the moment you access them for reporting. Don't wait until publication day.
+  </Card>
+  <Card title="One item per source" icon="list" color="#009BF9">
+    Keep evidence items separate. One file = one hash = one verifiable proof.
+  </Card>
+  <Card title="Label for jurors" icon="tag" color="#002A43">
+    Write labels that explain what the evidence is, not just a filename. Jurors read these labels.
+  </Card>
+  <Card title="Redact before upload" icon="eye-slash" color="#002A43">
+    Confidential sources: redact first, then upload. The redacted version is what gets hashed.
+  </Card>
+</CardGroup>

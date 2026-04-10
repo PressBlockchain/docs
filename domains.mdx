@@ -1,0 +1,214 @@
+---
+title: Domains & Apps
+description: Every protocol surface under presschain.io — what each app does, its port, who owns it, and how it fits into the stack.
+icon: globe
+---
+
+## The Naming Principle
+
+All canonical protocol infrastructure lives permanently under `presschain.io`. This is intentional and load-bearing. As PressChain decentralizes, operators behind these URLs can change — the URLs themselves never need to. Community-run RPC nodes can serve `rpc.presschain.io` without breaking any integration anywhere.
+
+`presslabs.io` hosts everything organizational — legal, grants, careers, node sales. PressLabs does not host RPC, explorer, or any dApp. This separation is what keeps the protocol from looking corporate-controlled.
+
+---
+
+## Full Protocol Surface Map
+
+```
+presschain.io namespace
+│
+├── rpc.presschain.io           Public JSON-RPC HTTP endpoint
+├── testnet-rpc.presschain.io   Testnet JSON-RPC HTTP endpoint
+├── archive.rpc.presschain.io   Archive node (full state history)
+├── ws.presschain.io            WebSocket RPC (real-time subscriptions)
+│
+├── bridge.presschain.io        Bridge API middleware  — internal port varies
+│
+├── portal.presschain.io        Outlet control plane  [port 3010]
+├── outlet.presschain.io        Outlet-facing app     [port 3011]
+├── court.presschain.io         Court dApp            [port 3012]
+├── proposals.presschain.io     Governance            [port 3013]
+├── ads.presschain.io           Ad marketplace        [port 3014]
+├── status.presschain.io        Network telemetry     [port 3015]
+├── docs.presschain.io          This documentation    [port 3016]
+├── faucet.presschain.io        Testnet PRESS faucet  [port 3017]
+│
+├── key.presschain.io           PressKey identity wallet (extension hosted)
+├── explorer.presschain.io      BlockScout (customized for Capsules)
+├── swap.presschain.io          Token exchange
+└── rights.presschain.io        Rights licensing marketplace
+```
+
+---
+
+## App Directory
+
+<CardGroup cols={2}>
+  <Card title="portal.presschain.io" icon="gauge" color="#009BF9">
+    **Outlet Control Plane** · Port 3010
+
+    The primary hub for editors, outlet managers, and journalists. Capsule queue management, acceptance monitoring, role management, import tools, distribution configuration, rights licensing, compliance exports, and the full Admin CMS.
+
+    Source: `/home/press/PressChain/apps/portal`
+  </Card>
+  <Card title="outlet.presschain.io" icon="newspaper" color="#009BF9">
+    **Outlet-Facing App** · Port 3011
+
+    Public-facing outlet interface. Readers can browse canonical Capsules, see voting status, view integrity labels, and connect PressKey to vote directly.
+
+    Source: `/home/press/PressChain/apps/outlet`
+  </Card>
+  <Card title="court.presschain.io" icon="gavel" color="#002A43">
+    **Court Engine dApp** · Port 3012
+
+    Public interface for the dispute resolution engine. Browse open cases, track case lifecycle, view evidence submissions, verdicts, and permanent integrity label assignments.
+
+    Source: `/home/press/PressChain/apps/court`
+  </Card>
+  <Card title="proposals.presschain.io" icon="landmark" color="#002A43">
+    **Governance** · Port 3013
+
+    Protocol governance interface. Submit proposals, vote with bonded weight, view active and historical outcomes. Council emergency actions are logged here.
+
+    Source: `/home/press/PressChain/apps/proposals`
+  </Card>
+  <Card title="ads.presschain.io" icon="rectangle-ad" color="#009BF9">
+    **Ad Marketplace** · Port 3014
+
+    Proof-of-placement ad system with escrow. Advertisers create campaigns, funds are escrowed, placement is verified on-chain before release. 5% protocol fee.
+
+    Source: `/home/press/PressChain/apps/ads`
+  </Card>
+  <Card title="status.presschain.io" icon="chart-line" color="#009BF9">
+    **Network Telemetry** · Port 3015
+
+    Live: block height, validator count, vault operator health, acceptance rate, average time to acceptance, burn pool size, next burn countdown, court backlog, governance participation.
+
+    Source: `/home/press/PressChain/apps/status`
+  </Card>
+  <Card title="docs.presschain.io" icon="book" color="#002A43">
+    **Documentation** · Port 3016
+
+    This documentation. Mintlify-powered, Nunito + DM Serif Display, light-default with dark mode. Served via the `presschain-next@docs` systemd service.
+
+    Source: `/home/press/presschain-docs`
+  </Card>
+  <Card title="faucet.presschain.io" icon="droplet" color="#002A43">
+    **Testnet Faucet** · Port 3017
+
+    Dispenses testnet PRESS (tPRESS) for development and testing. Chain ID 77117002. Rate limited per address.
+
+    Source: `/home/press/PressChain/apps/faucet`
+  </Card>
+  <Card title="key.presschain.io" icon="key" color="#009BF9">
+    **PressKey Identity Wallet**
+
+    Mandatory identity layer. Browser extension. Generates and encrypts private keys locally. Signs all protocol actions via nonce challenge. Never exposes raw keys to any server.
+  </Card>
+  <Card title="explorer.presschain.io" icon="magnifying-glass" color="#002A43">
+    **Customized BlockScout**
+
+    Not a generic transaction scanner. First-class object is the Capsule. Shows acceptance ratios, integrity labels, vote breakdowns, revision lineage, burn countdown. Built on BlockScout with PressChain-specific customizations.
+  </Card>
+</CardGroup>
+
+---
+
+## Monorepo Structure
+
+All Next.js apps live in the main PressChain monorepo:
+
+```bash
+/home/press/PressChain/
+└── apps/
+    ├── portal/           next.config.ts   package.json   port 3010
+    ├── outlet/           next.config.ts   package.json   port 3011
+    ├── court/            next.config.ts   package.json   port 3012
+    ├── proposals/        next.config.ts   package.json   port 3013
+    ├── ads/              next.config.ts   package.json   port 3014
+    ├── status/           next.config.ts   package.json   port 3015
+    ├── docs/             (Mintlify)                       port 3016
+    └── faucet/           next.config.ts   package.json   port 3017
+```
+
+Each app is fully independent with its own config and package manifest. They share design tokens and contract ABIs via workspace packages.
+
+---
+
+## Static Marketing Site (presschain.io)
+
+The main marketing site is a separate Vite/React app managed through cPanel on `38.83.53.142`:
+
+```bash
+/home/press/presschain-site/
+├── src/App.jsx
+├── src/main.jsx
+└── dist/               # Built output
+
+# Deploy target (cPanel):
+/home/pcpressroot/public_html/
+```
+
+Build and deploy:
+```bash
+cd /home/press/presschain-site
+npm run build
+\cp -rf dist/. /home/pcpressroot/public_html/
+chown -R pcpressroot:pcpressroot /home/pcpressroot/public_html/
+/scripts/rebuildhttpdconf && /scripts/restartsrv_httpd
+```
+
+---
+
+## presslabs.io — What Lives Here
+
+<Note>
+PressLabs is the steward organization, not the chain. `presslabs.io` hosts everything commercial and organizational — never protocol infrastructure.
+</Note>
+
+- Legal disclosures and terms of service
+- Transparency reports
+- Ecosystem grants and programs
+- Validator node sales and pricing pages
+- Careers and public communications
+- Foundation contact and governance filings
+
+**PressLabs does not host:** RPC, explorer, canonical dApps, or Bridge API.
+
+---
+
+## RPC Surfaces
+
+| Endpoint | Type | Notes |
+|---|---|---|
+| `rpc.presschain.io` | JSON-RPC HTTP | Public. Standard EVM queries, tx submission. |
+| `testnet-rpc.presschain.io` | JSON-RPC HTTP | Testnet only. Chain ID 77117002. |
+| `archive.rpc.presschain.io` | Archive JSON-RPC | Full historical state. All block history from genesis. |
+| `ws.presschain.io` | WebSocket | Real-time block and event subscriptions. |
+| `127.0.0.1:8545` | Internal HTTP | Mainnet. Server-side only — never expose publicly. |
+| `127.0.0.1:9545` | Internal HTTP | Testnet. Server-side only — never expose publicly. |
+
+---
+
+## Apache Proxy Configs
+
+Each subdomain's proxy configuration lives at:
+
+```
+/etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/<domain>/proxy.conf
+```
+
+Pattern for all Next.js app subdomains:
+
+```apache
+# Example: portal.presschain.io → port 3010
+ProxyPreserveHost On
+ProxyPass / http://127.0.0.1:3010/
+ProxyPassReverse / http://127.0.0.1:3010/
+RequestHeader set X-Forwarded-Proto "https"
+```
+
+After any proxy config change:
+```bash
+/scripts/rebuildhttpdconf && /scripts/restartsrv_httpd
+```

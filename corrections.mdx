@@ -1,0 +1,141 @@
+---
+title: Corrections & Updates
+description: How to fix mistakes on PressChain — revision lineage, correction Capsules, and why the original always stays.
+icon: rotate
+---
+
+## The Golden Rule: No Erasure
+
+When you make a mistake in a published article, you might be tempted to just edit the article quietly. On PressChain, that's not how it works — and that's a feature, not a limitation.
+
+**Corrections create lineage. They don't erase the original.**
+
+When you correct an article, you publish a new Capsule that explicitly points back to the one being corrected. Both remain visible forever. The Explorer shows the full chain. Your correction becomes the authoritative version — but the original is always on record.
+
+This protects everyone:
+- **Readers** know the full history of what was said
+- **You** demonstrate accountability by correcting clearly
+- **The public record** is complete, not selectively edited
+- **Court proceedings** can reference both versions
+
+---
+
+## Real Scenario: Maya's Vote Count Error
+
+Maya Chen published her city council story with the vote count as "6-3." A reader alerts her the next day — she misheard during the live meeting. The actual vote was 7-2.
+
+### What Maya Does NOT Do
+
+She does not open WordPress and edit "6-3" to "7-2" quietly. On a normal site she could, and nobody would know. On PressChain, her original Capsule is permanent — the claim "6-3" is hash-committed with the archived council session as evidence. Editing the post would create a mismatch between the published content and the committed Capsule.
+
+### What Maya Does
+
+1. Maya writes a correction article explaining the error clearly
+2. In the WordPress SYNC panel, she selects **"This is a correction"** and enters Capsule ID `#247`
+3. She attaches new evidence: the official council vote record showing 7-2
+4. She writes the revision reason: *"Vote count corrected from 6-3 to 7-2 based on official council vote record"*
+5. She clicks Submit — PressKey signs the correction Capsule
+6. The correction Capsule #289 enters a fresh 72-hour acceptance window
+7. It's accepted — and becomes the authoritative version
+
+### What Readers See
+
+- Original Capsule #247: *"Council Approves Budget 6-3"* → labeled **Corrected**, with a link to #289
+- Correction Capsule #289: *"Correction: Council Budget Vote Was 7-2"* → labeled **Current**
+- Explorer shows both with the full revision chain
+
+Maya's reputation for honesty goes up. Her outlet's acceptance rate continues to improve. The correction is on record as a governance object, not a silent edit.
+
+---
+
+## How to Submit a Correction
+
+<Steps>
+  <Step title="Write the correction clearly">
+    Your correction article should:
+    - State what the original said
+    - State what the correct information is
+    - Briefly explain how the error occurred
+    - Not be defensive or vague
+
+    *"An earlier version of this article stated the council vote was 6-3. The correct vote was 7-2 based on official meeting records. We regret the error."*
+  </Step>
+  <Step title="Attach evidence for the correction">
+    Your correction needs its own evidence — the source that reveals the error and proves the correct information. For Maya: the official council vote record.
+  </Step>
+  <Step title="Submit via Portal or WordPress">
+    **In WordPress:** SYNC panel → "This is a correction" → Enter original Capsule ID
+
+    **In Portal:** Submit Capsule → Toggle "Correction" → Enter parent Capsule ID
+  </Step>
+  <Step title="Set the revision fields">
+    - **Revision reason:** Plain-language explanation of what changed and why
+    - **Parent Capsule ID:** The Capsule being corrected
+    - **Change summary URI:** Optional — link to a detailed changelog
+  </Step>
+  <Step title="Submit and go through acceptance">
+    Your correction Capsule goes through the same 72-hour public acceptance vote. It needs 60% approval and 5% quorum to become the authoritative version.
+  </Step>
+</Steps>
+
+<Warning>
+**Corrections must pass acceptance.** If the public finds your correction insufficient or misleading, it can be rejected. This is by design — corrections are not unilateral. The public validates them the same way it validates original articles.
+</Warning>
+
+---
+
+## Revision Lineage Explained
+
+```
+Capsule #247 — Original
+"Council Approves Budget 6-3"
+Status: Corrected  ──────────────────────→ Link to #289
+
+         │
+         └── Capsule #289 — Correction 1
+             "Correction: Council Budget Vote Was 7-2"
+             Parent: #247
+             Status: Current (authoritative)
+             Revision: 1
+```
+
+If a second correction is ever needed:
+
+```
+#247 → #289 → #312 (Correction 2)
+               └── currentCapsuleId = 312
+               └── rootCapsuleId = 247
+```
+
+The `rootCapsuleId` always points to the original. The `currentCapsuleId` always points to the most recently accepted authoritative version.
+
+---
+
+## Author-Initiated Retractions
+
+Sometimes an entire article needs to be retracted — not just corrected:
+
+1. Submit a **Retraction Capsule** referencing the original
+2. The original gets the label **Retracted by Author**
+3. Both remain visible — your retraction is the public record
+4. Your article page can show a prominent retraction notice
+
+**Retraction is not deletion.** Anyone can still read the original. The retraction is what shows it was pulled and why.
+
+---
+
+## Correction Fees
+
+Publishing a correction Capsule carries the same 30 PRESS base publish fee as an original. This is intentional — corrections are first-class publishing events. They go through acceptance. They have their own evidence. They are part of the permanent record.
+
+---
+
+## What Corrections Do for Your Reputation
+
+Quick, clear corrections that pass acceptance are a positive signal on PressChain. The protocol tracks:
+
+- Time from original publication to correction submission
+- Whether corrections pass acceptance
+- The nature of errors (factual, contextual, etc.)
+
+Outlets that correct promptly and transparently build stronger reputation scores over time. Outlets that avoid corrections or submit inadequate ones face reputation pressure from the public vote.

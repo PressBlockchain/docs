@@ -1,0 +1,78 @@
+---
+title: Syndication & Distribution
+description: How the Press Network distributes your canonical journalism — tiers, channels, and the mandatory feed module.
+icon: broadcast-tower
+---
+
+## Distribution Starts at Acceptance
+
+Once your Capsule is canonical — accepted by public vote and finalized on-chain — it becomes eligible for distribution across the **Press Network**. Distribution is what makes canonical status commercially and reputationally valuable.
+
+Rejected or pending Capsules are not distributed. This is the mechanism that makes acceptance meaningful.
+
+## The Press Network
+
+The Press Network is the interconnected distribution feed that connects all PressHash outlets and partner feeds. When your article is distributed:
+
+- It appears in feeds on other PressHash outlets around the world
+- It enters topic-specific channels (investigative, local, business, politics, science, etc.)
+- It enters regional channels (Northeast US, Western Europe, etc.)
+- It enters language channels (English, Spanish, French, etc.)
+- It becomes discoverable in the Explorer's canonical content feed
+
+## Distribution Tiers
+
+Your distribution reach depends on your outlet's track record:
+
+| Tier | Who Qualifies | What You Get |
+|---|---|---|
+| **Standard** | All active, onboarded outlets | Press Network, basic feed inclusion |
+| **Elevated** | 75%+ acceptance rate, clean integrity record | Higher feed position, more channels |
+| **Premium** | 90%+ acceptance, Verified/Clean labels, 12+ months active | Maximum position, all channels, partner priority |
+
+Your tier is calculated automatically from your on-chain record. No applications. No negotiations.
+
+## Configuring Your Channels
+
+Portal → **Outlet** → **Distribution** → select your active streams:
+
+- Press Network (mandatory)
+- PressHash network
+- Topic channels
+- Regional channels
+- Language channels
+- Affiliate streams (named outlets you partner with)
+
+## The Mandatory Press Network Module
+
+Every PressHash outlet must display the Press Network feed widget on their site. This shows recently accepted Capsules from across the network — a non-intrusive sidebar or footer module.
+
+**Disabling it triggers:**
+- A Brand Separation Fee (automatic PRESS charge)
+- A distribution tier downgrade
+- A permanent public log entry on-chain
+
+This rule exists because outlets benefit from the network's reach. Opting out of showing the network feed while receiving its distribution is not permitted.
+
+## What Improves Your Tier
+
+| Factor | How to Improve |
+|---|---|
+| Acceptance rate | Submit well-evidenced, well-sourced Capsules |
+| Integrity score | Avoid court findings; respond when challenged |
+| Bond stability | Keep journalist bonds active long-term |
+| Court response rate | Always respond to summons |
+| Role tenure | Long-term active participation |
+
+## Checking Your Distribution Status
+
+Portal → **Analytics** → **Distribution** shows:
+- Your current distribution tier
+- Active channels
+- Capsule-level reach data
+- Press Network impressions by article
+
+```bash
+# Via Bridge API
+GET https://bridge.presschain.io/distribution/:capsuleId
+```

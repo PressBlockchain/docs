@@ -1,0 +1,156 @@
+---
+title: Publish Your First Story
+description: A step-by-step walkthrough — from writing your article to watching your first Capsule go through acceptance.
+icon: pen-to-square
+---
+
+## Real Scenario: Marcus's Environmental Story
+
+Marcus Webb is a freelance journalist documenting illegal dumping near a protected wetland. He has photos, a government inspection report, and a source on the city's environmental team. He's been writing for *The Bay Observer*, which just joined PressChain.
+
+This is how Marcus publishes his story on PressChain.
+
+---
+
+## Before You Publish
+
+You need three things:
+
+<Steps>
+  <Step title="PressKey set up and funded">
+    Install PressKey from [key.presschain.io](https://key.presschain.io). Get testnet PRESS from the faucet, or use real PRESS on mainnet. You need ~30 PRESS for the publish fee.
+
+    [Set up PressKey →](/journalist/presskey-setup)
+  </Step>
+  <Step title="A Reporter role (or higher)">
+    You need at least the Reporter role to publish Capsules. This requires bonding a small amount of PRESS — economic accountability behind your work.
+
+    Your outlet admin can set this up for you if your newsroom is already on PressChain.
+  </Step>
+  <Step title="Your evidence ready">
+    Gather your sources before you publish. Archived web pages, documents, photos, transcripts. You'll attach these as part of your Capsule.
+  </Step>
+</Steps>
+
+---
+
+## The Publishing Flow
+
+When Marcus clicks Publish in WordPress:
+
+```
+Article goes live on BayObserver.com immediately
+              │
+              │ (simultaneously)
+              ▼
+SYNC plugin creates a Capsule draft
+              │
+              ▼
+Marcus reviews the draft in the Gutenberg sidebar
+Adds evidence, confirms contributors, reviews claims
+              │
+              ▼
+Marcus clicks "Submit to PressChain"
+PressKey opens for signing
+Marcus approves (30 PRESS fee)
+              │
+              ▼
+Capsule enters 72-hour public acceptance window
+              │
+      ┌───────┴────────┐
+      ▼                ▼
+   Accepted         Rejected
+  Canonical badge   "Not Canonical"
+  Distribution on   No distribution
+```
+
+---
+
+## Step by Step
+
+<Steps>
+  <Step title="Write and publish your article normally">
+    In WordPress, write your article as you always would. When you're ready, hit Publish. Your article goes live on your site immediately — no delay, no change to your workflow.
+  </Step>
+  <Step title="Open the PressChain panel in Gutenberg">
+    In the right sidebar of the WordPress editor, you'll see the **PressChain** panel. It shows a Capsule draft that SYNC automatically created from your article.
+  </Step>
+  <Step title="Review your structured claims">
+    SYNC attempts to extract structured claims from your article text. For Marcus's story, it might suggest:
+
+    - `[Reporting]` City approved permits despite inspection violations (local scope)
+    - `[Confirmed]` EPA inspection report dated Nov 3 confirms Category B violations
+    - `[Reporting]` Wetland runoff detected within 200 meters of protected zone
+
+    You can edit, remove, or add claims. Be precise — claims are what get disputed if someone challenges your story.
+  </Step>
+  <Step title="Attach your evidence">
+    For each piece of evidence, you upload the file or provide a URL:
+
+    | Evidence | Type | Primary? |
+    |---|---|---|
+    | Archive.org snapshot of city permit page | `archived_page` | ✓ Yes |
+    | EPA inspection report PDF | `document` | ✓ Yes |
+    | Marcus's site photos | `media` | No |
+    | Source interview transcript | `transcript` | No |
+
+    Each item is hashed automatically. The hash is stored on PressChain permanently.
+  </Step>
+  <Step title="Confirm contributors">
+    SYNC auto-fills Marcus as the author (Reporter role, 80% share). If an editor reviewed the piece, add them here (e.g., 20% share). This determines how rights revenue is split if the article is licensed.
+  </Step>
+  <Step title="Submit and sign">
+    Click **Submit to PressChain**. PressKey opens showing:
+    - Action: Capsule submission
+    - Outlet: the-bay-observer
+    - Fee: 30 PRESS
+
+    Click Approve. The Capsule enters the acceptance queue.
+  </Step>
+</Steps>
+
+---
+
+## Watching Your Capsule
+
+After submission, the Gutenberg panel updates live:
+
+```
+┌─────────────────────────────────────────┐
+│ 🔗 PressChain                           │
+├─────────────────────────────────────────┤
+│ Capsule #412 · Pending Acceptance       │
+│                                         │
+│ ████████░░  79% Yes  (87 votes)        │
+│ Quorum: ✓ Met (6.2%)                   │
+│ Closes: Jan 12, 2024  11:00 AM         │
+│                                         │
+│ Integrity:    Clean                     │
+│ View on Explorer →                      │
+└─────────────────────────────────────────┘
+```
+
+You can also watch from anywhere at `explorer.presschain.io/capsule/412`.
+
+---
+
+## If Your Capsule Is Accepted
+
+After 72 hours, if Marcus's story passes:
+
+- The Gutenberg panel shows **✓ Canonical on PressChain**
+- The article page shows an integrity badge with an Explorer link
+- Distribution to the Press Network activates
+- Rights licensing becomes available on `rights.presschain.io`
+
+## If Your Capsule Is Rejected
+
+Your article stays live on your site. There's no public "failure" banner. You'll see **Not Canonical** status in your dashboard.
+
+Common reasons:
+- **Quorum not met** — not enough voters participated. Try resubmitting when your audience is more engaged.
+- **Approval below 60%** — voters found issues. Check the vote breakdown in the Portal for signals, strengthen evidence, and revise.
+
+<Tip>
+You can submit a revised Capsule at any time. Revision goes through acceptance just like the original. Your outlet's acceptance history improves over time as your newsroom builds its reputation on the protocol.
+</Tip>

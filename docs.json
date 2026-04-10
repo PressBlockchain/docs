@@ -1,0 +1,202 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "PressChain",
+  "theme": "mint",
+  "logo": {
+    "light": "https://presschain.io/press-logo.png",
+    "dark": "https://presschain.io/press-logo.png",
+    "href": "https://presschain.io"
+  },
+  "favicon": "https://presschain.io/press-logo.png",
+  "colors": {
+    "primary": "#009BF9",
+    "light": "#38B6FF",
+    "dark": "#002A43",
+    "background": {
+      "light": "#F8FCFF",
+      "dark": "#020D14"
+    }
+  },
+  "topbar": {
+    "links": [
+      {
+        "name": "Explorer",
+        "url": "https://explorer.presschain.io"
+      },
+      {
+        "name": "Status",
+        "url": "https://status.presschain.io"
+      }
+    ],
+    "cta": {
+      "name": "Open Portal →",
+      "url": "https://portal.presschain.io"
+    }
+  },
+  "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "name": "GitHub",
+          "icon": "github",
+          "url": "https://github.com/presslabs"
+        },
+        {
+          "name": "Bridge API",
+          "icon": "webhook",
+          "url": "https://bridge.presschain.io/health"
+        },
+        {
+          "name": "Faucet",
+          "icon": "droplet",
+          "url": "https://faucet.presschain.io"
+        },
+        {
+          "name": "support@presschain.io",
+          "icon": "envelope",
+          "url": "mailto:support@presschain.io"
+        }
+      ]
+    },
+    "tabs": [
+      {
+        "tab": "Home",
+        "pages": ["index"]
+      },
+      {
+        "tab": "Developer",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "developer/introduction",
+              "developer/quickstart"
+            ]
+          },
+          {
+            "group": "Architecture",
+            "pages": [
+              "developer/architecture/overview",
+              "developer/architecture/domains",
+              "developer/architecture/infrastructure"
+            ]
+          },
+          {
+            "group": "Chain & Network",
+            "pages": [
+              "developer/chain/config",
+              "developer/chain/rpc",
+              "developer/chain/contracts",
+              "developer/chain/abis"
+            ]
+          },
+          {
+            "group": "The Capsule",
+            "pages": [
+              "developer/capsule/standard",
+              "developer/capsule/acceptance",
+              "developer/capsule/lifecycle"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "developer/integrations/bridge-api",
+              "developer/integrations/presskey",
+              "developer/integrations/events",
+              "developer/integrations/wordpress"
+            ]
+          },
+          {
+            "group": "Operators",
+            "pages": [
+              "developer/operators/services",
+              "developer/operators/deployment",
+              "developer/operators/environment",
+              "developer/operators/troubleshooting",
+              "developer/operators/handoff"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "For Journalists",
+        "groups": [
+          {
+            "group": "Start Here",
+            "pages": [
+              "journalist/welcome",
+              "journalist/presskey-setup"
+            ]
+          },
+          {
+            "group": "Your Stories",
+            "pages": [
+              "journalist/capsules/what-is-a-capsule",
+              "journalist/capsules/publish-your-first-story",
+              "journalist/capsules/evidence-and-sources",
+              "journalist/capsules/corrections"
+            ]
+          },
+          {
+            "group": "Public Voting",
+            "pages": [
+              "journalist/voting/how-voting-works",
+              "journalist/voting/reputation"
+            ]
+          },
+          {
+            "group": "Disputes & Integrity",
+            "pages": [
+              "journalist/court/disputes",
+              "journalist/court/integrity-labels"
+            ]
+          },
+          {
+            "group": "Running an Outlet",
+            "pages": [
+              "journalist/outlets/register-your-newsroom",
+              "journalist/outlets/domain-verification",
+              "journalist/outlets/wordpress-guide",
+              "journalist/outlets/syndication"
+            ]
+          },
+          {
+            "group": "Earning Revenue",
+            "pages": [
+              "journalist/money/overview",
+              "journalist/money/rights-licensing",
+              "journalist/money/ads"
+            ]
+          },
+          {
+            "group": "Roles & Standing",
+            "pages": [
+              "journalist/roles/overview",
+              "journalist/roles/bonds",
+              "journalist/roles/penalties"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "css": "/_styles/custom.css",
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true,
+    "raiseIssue": true
+  },
+  "search": {
+    "prompt": "Search PressChain docs..."
+  },
+  "seo": {
+    "indexHiddenPages": false
+  },
+  "footer": {
+    "socials": {
+      "twitter": "https://twitter.com/presschain_io",
+      "github": "https://github.com/presslabs"
+    }
+  }
+}

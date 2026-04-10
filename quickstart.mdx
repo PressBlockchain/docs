@@ -1,0 +1,218 @@
+---
+title: Quickstart
+description: Read a live Capsule, check a bond, and call the Bridge API in under 10 minutes.
+icon: bolt
+---
+
+## What You'll Do
+
+By the end of this guide you'll have:
+- Connected to the PressChain testnet
+- Read a live Capsule from the Bridge API
+- Queried bond state from the BondManager contract
+- Made an authenticated Bridge write call
+
+**Time:** ~10 minutes. **Prerequisites:** Node.js 18+, basic ethers.js familiarity.
+
+---
+
+## Step 1 — Install Dependencies
+
+```bash
+mkdir presschain-quickstart && cd presschain-quickstart
+npm init -y
+npm install ethers dotenv
+```
+
+Create `.env`:
+
+```bash
+RPC_URL=https://rpc.presschain.io
+BRIDGE_URL=https://bridge.presschain.io
+# Add your PressKey session token after authenticating:
+# BRIDGE_TOKEN=your_session_token_here
+```
+
+---
+
+## Step 2 — Connect and Verify Chain
+
+```typescript
+// index.ts
+import { JsonRpcProvider, formatUnits } from "ethers";
+import "dotenv/config";
+
+const provider = new JsonRpcProvider(process.env.RPC_URL!);
+
+async function main() {
+  const network = await provider.getNetwork();
+  const blockNumber = await provider.getBlockNumber();
+
+  console.log("Chain ID:", network.chainId.toString()); // 77117002
+  console.log("Block:", blockNumber);
+  console.log("Connected ✓");
+}
+
+main();
+```
+
+```bash
+npx tsx index.ts
+# Chain ID: 77117002
+# Block: 1048392
+# Connected ✓
+```
+
+---
+
+## Step 3 — Read a Live Capsule from Bridge
+
+The Bridge API is the fastest way to read normalized Capsule data — no ABI decoding required.
+
+```typescript
+// read-capsule.ts
+import "dotenv/config";
+
+async function getCapsule(capsuleId: string) {
+  const res = await fetch(
+    `${process.env.BRIDGE_URL}/capsules/${capsuleId}`
+  );
+  const data = await res.json();
+
+  if (!data.ok) {
+    console.error("Not found:", capsuleId);
+    return;
+  }
+
+  const { capsule, content, contributors, evidence } = data;
+
+  console.log("\n══ Capsule", capsuleId, "══");
+  console.log("Title:       ", content?.title);
+  console.log("Outlet:      ", capsule.outletSlug);
+  console.log("Status:      ", capsule.status);       // accepted / pending / rejected
+  console.log("Yes votes:   ", capsule.weightedYes);
+  console.log("No votes:    ", capsule.weightedNo);
+  console.log("Accepted at: ", capsule.acceptedAt ? new Date(Number(capsule.acceptedAt) * 1000).toISOString() : "—");
+  console.log("Evidence:    ", evidence?.length ?? 0, "items");
+  console.log("Contributors:", contributors?.map((c: any) => c.displayName).join(", "));
+}
+
+getCapsule("1");
+```
+
+---
+
+## Step 4 — Query Bond State from Contract
+
+```typescript
+// check-bond.ts
+import { JsonRpcProvider, Contract } from "ethers";
+import "dotenv/config";
+
+const BOND_MANAGER = "0x4b39edF3fA0e7DBAFFA45FDCBbE08B6681D1076b";
+
+// Minimal ABI for what we need
+const ABI = [
+  "function isRoleActive(address wallet, uint8 role) view returns (bool)",
+  "function getRoleBond(address wallet, uint8 role) view returns (uint8, uint8, uint256, uint256, uint256, uint256)",
+  "function minimumBondByRole(uint8 role) view returns (uint256)",
+  "function dissolutionFeeBps() view returns (uint16)",
+];
+
+// Role encoding: 1=Journalist, 2=Reporter, 3=Editor, 4=Governance, 5=Foundation
+const ROLES = { Journalist: 1, Reporter: 2, Editor: 3 };
+
+async function checkBond(walletAddress: string) {
+  const provider = new JsonRpcProvider(process.env.RPC_URL!);
+  const bondManager = new Contract(BOND_MANAGER, ABI, provider);
+
+  for (const [roleName, roleId] of Object.entries(ROLES)) {
+    const isActive = await bondManager.isRoleActive(walletAddress, roleId);
+    const minBond = await bondManager.minimumBondByRole(roleId);
+
+    if (isActive) {
+      const [, , bondedAmount, , activatedAt] = await bondManager.getRoleBond(walletAddress, roleId);
+      console.log(`\n${roleName} (role ${roleId})`);
+      console.log(`  Bonded:   ${formatUnits(bondedAmount, 18)} PRESS`);
+      console.log(`  Since:    ${new Date(Number(activatedAt) * 1000).toLocaleDateString()}`);
+    } else {
+      console.log(`\n${roleName}: not active (min: ${formatUnits(minBond, 18)} PRESS)`);
+    }
+  }
+}
+
+checkBond("0xYOUR_WALLET_ADDRESS");
+```
+
+---
+
+## Step 5 — List Recent Capsules via Bridge
+
+```typescript
+// list-capsules.ts
+import "dotenv/config";
+
+async function listRecent(outletSlug?: string, limit = 5) {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (outletSlug) params.set("outlet", outletSlug);
+
+  const res = await fetch(`${process.env.BRIDGE_URL}/capsules?${params}`);
+  const { capsules } = await res.json();
+
+  console.log(`\nRecent capsules (${capsules?.length ?? 0}):\n`);
+  for (const c of capsules ?? []) {
+    console.log(`#${c.id}  [${c.status.padEnd(8)}]  ${c.outletSlug}  —  ${c.title ?? "(no title)"}`);
+  }
+}
+
+listRecent(); // all outlets
+// listRecent("presshash"); // specific outlet
+```
+
+---
+
+## Step 6 — Authenticated Bridge Request
+
+Write routes require a Bearer token from a PressKey session:
+
+```typescript
+// submit-check.ts — verify your token works
+import "dotenv/config";
+
+async function checkAuth() {
+  const res = await fetch(`${process.env.BRIDGE_URL}/wallet/${process.env.WALLET_ADDRESS}/roles`, {
+    headers: {
+      "Authorization": `Bearer ${process.env.BRIDGE_TOKEN}`,
+    },
+  });
+
+  if (res.status === 401) {
+    console.error("Token invalid or expired — re-auth in PressKey");
+    return;
+  }
+
+  const data = await res.json();
+  console.log("Active roles:", JSON.stringify(data.roles, null, 2));
+}
+
+checkAuth();
+```
+
+---
+
+## What's Next
+
+<CardGroup cols={2}>
+  <Card title="Contract Registry" icon="file-contract" href="/developer/chain/contracts">
+    All deployed addresses with copy-paste TypeScript constants.
+  </Card>
+  <Card title="Bridge API Reference" icon="webhook" href="/developer/integrations/bridge-api">
+    Full GET and POST route documentation with request/response shapes.
+  </Card>
+  <Card title="Capsule Standard" icon="box" href="/developer/capsule/standard">
+    The full JSON schema from the Rust API including evidence, contributors, and revision lineage.
+  </Card>
+  <Card title="PressKey Integration" icon="key" href="/developer/integrations/presskey">
+    Nonce challenge flow, event matrix, and WordPress security model.
+  </Card>
+</CardGroup>

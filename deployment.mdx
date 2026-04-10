@@ -1,0 +1,138 @@
+---
+title: Deployment
+description: Build sequences, deploy commands, rollback procedures, and the cPanel/systemd hybrid model.
+icon: layer-group
+---
+
+## Two Deployment Models
+
+| Target | Method | Who manages |
+|---|---|---|
+| Next.js dApps | `pnpm build` → `systemctl restart` | systemd on .58 |
+| Static marketing site | `npm run build` → `\cp` → Apache restart | cPanel on .142 |
+| Docs (Mintlify) | `mint dev` process on .58 | Direct process / systemd |
+
+## Next.js App Deploy (Standard)
+
+```bash
+# Build
+cd /home/press/PressChain/apps/portal
+pnpm build
+
+# Restart service
+sudo systemctl restart presschain-next@portal
+
+# Verify
+journalctl -u presschain-next@portal -n 20 --no-pager
+curl -I https://portal.presschain.io
+```
+
+## Full Rebuild (Clear Cache)
+
+Use this when you see stale UI or build artifacts:
+
+```bash
+cd /home/press/PressChain/apps/portal
+rm -rf .next
+pnpm build
+sudo systemctl restart presschain-next@portal
+journalctl -u presschain-next@portal -n 50 --no-pager
+curl -I https://portal.presschain.io
+```
+
+## All Apps Build Reference
+
+```bash
+# App → directory → port → service
+portal     → apps/portal     → 3010 → presschain-next@portal
+outlet     → apps/outlet     → 3011 → presschain-next@outlet
+court      → apps/court      → 3012 → presschain-next@court
+proposals  → apps/proposals  → 3013 → presschain-next@proposals
+ads        → apps/ads        → 3014 → presschain-next@ads
+status     → apps/status     → 3015 → presschain-next@status
+docs       → apps/docs       → 3016 → presschain-next@docs
+faucet     → apps/faucet     → 3017 → presschain-next@faucet
+```
+
+## Static Site Deploy (presschain.io)
+
+```bash
+# Build (Vite)
+cd /home/press/presschain-site
+npm run build
+
+# Deploy — MUST use backslash prefix
+\cp -rf dist/. /home/pcpressroot/public_html/
+
+# Fix ownership
+chown -R pcpressroot:pcpressroot /home/pcpressroot/public_html/
+
+# Restart Apache
+/scripts/rebuildhttpdconf && /scripts/restartsrv_httpd
+
+# Verify
+curl -I https://presschain.io
+```
+
+<Warning>
+Always use `\cp` (backslash prefix) — the `cp` alias on cPanel servers is interactive and will stall automated deploys.
+</Warning>
+
+## Rollback Procedure
+
+```bash
+# Always backup before deploying
+cp -av /home/pcpressroot/public_html \
+       /home/pcpressroot/public_html.bak.$(date +%Y%m%d_%H%M%S)
+
+# Rollback static site
+\cp -rf /home/pcpressroot/public_html.bak.TIMESTAMP/. \
+        /home/pcpressroot/public_html/
+chown -R pcpressroot:pcpressroot /home/pcpressroot/public_html/
+/scripts/rebuildhttpdconf && /scripts/restartsrv_httpd
+
+# Rollback Next.js app — checkout previous commit and rebuild
+cd /home/press/PressChain
+git log --oneline -5       # find previous commit
+git checkout <commit-hash> -- apps/portal
+cd apps/portal
+pnpm build
+sudo systemctl restart presschain-next@portal
+```
+
+## Deploy Checklist
+
+**Pre-deploy:**
+- [ ] Bridge health: `curl https://bridge.presschain.io/health`
+- [ ] No active court cases with imminent deadlines
+- [ ] Backup taken
+
+**Deploy:**
+- [ ] Build succeeds with no errors
+- [ ] Use `\cp` not `cp` for static
+- [ ] Fix ownership if root was used
+- [ ] Restart service / Apache
+
+**Post-deploy:**
+- [ ] HTTP 200 from production URL
+- [ ] Key feature spot-check (login, capsule list)
+- [ ] No errors in logs for 2 minutes
+
+## Apache VHost Pattern
+
+Each subdomain needs a proxy config at:
+```
+/etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/<domain>/proxy.conf
+```
+
+```apache
+ProxyPreserveHost On
+ProxyPass / http://127.0.0.1:PORT/
+ProxyPassReverse / http://127.0.0.1:PORT/
+RequestHeader set X-Forwarded-Proto "https"
+```
+
+After adding or editing proxy configs:
+```bash
+/scripts/rebuildhttpdconf && /scripts/restartsrv_httpd
+```

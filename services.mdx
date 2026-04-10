@@ -1,0 +1,175 @@
+---
+title: Services & Ports
+description: All PressChain system services, systemd management, and the full port map.
+icon: server
+---
+
+## Service Names & Ports
+
+### Public Next.js Apps
+
+| Service | Port | URL |
+|---|---|---|
+| `presschain-next@portal` | 3010 | portal.presschain.io |
+| `presschain-next@outlet` | 3011 | outlet.presschain.io |
+| `presschain-next@court` | 3012 | court.presschain.io |
+| `presschain-next@proposals` | 3013 | proposals.presschain.io |
+| `presschain-next@ads` | 3014 | ads.presschain.io |
+| `presschain-next@status` | 3015 | status.presschain.io |
+| `presschain-next@docs` | 3016 | docs.presschain.io |
+| `presschain-next@faucet` | 3017 | faucet.presschain.io |
+
+### Internal Services
+
+| Service | Port |
+|---|---|
+| gateway | 46100 |
+| protocol-api | 46101 |
+| indexer | 46102 |
+| court-engine | 46103 |
+| media-engine | 46104 |
+| burn-engine | 46105 |
+| node-sales | 46106 |
+| vault-coordinator | 46107 |
+| notify | 46108 |
+| scheduler | 46109 |
+
+### Chain RPC (Internal Only)
+
+| | HTTP | WebSocket |
+|---|---|---|
+| Mainnet | `127.0.0.1:8545` | `127.0.0.1:8546` |
+| Testnet | `127.0.0.1:9545` | `127.0.0.1:9546` |
+
+### P2P
+
+| | Port |
+|---|---|
+| Mainnet P2P | 40303 |
+| Testnet P2P | 40304 |
+
+---
+
+## systemd Service Commands
+
+### Restart a Service
+
+```bash
+sudo systemctl restart presschain-next@portal
+sudo systemctl restart presschain-next@court
+sudo systemctl restart presschain-next@status
+sudo systemctl restart presschain-next@docs
+sudo systemctl restart presschain-next@faucet
+```
+
+### Check Status
+
+```bash
+systemctl status presschain-next@portal --no-pager -l
+systemctl status presschain-next@docs --no-pager -l
+```
+
+### View Logs
+
+```bash
+journalctl -u presschain-next@portal -n 100 --no-pager
+journalctl -u presschain-next@docs -n 100 --no-pager
+journalctl -u presschain-next@docs -f   # live follow
+```
+
+---
+
+## Build & Deploy
+
+### Standard App Build
+
+```bash
+cd /home/press/PressChain/apps/portal
+pnpm build
+sudo systemctl restart presschain-next@portal
+```
+
+### Full Rebuild (clear .next cache)
+
+```bash
+cd /home/press/PressChain/apps/portal
+rm -rf .next
+pnpm build
+sudo systemctl restart presschain-next@portal
+```
+
+### Docs Rebuild
+
+```bash
+cd /home/press/PressChain/apps/docs
+# (Mintlify — no build step needed for dev server)
+sudo systemctl restart presschain-next@docs
+```
+
+---
+
+## Key File Paths
+
+```bash
+# Main monorepo workspace
+/home/press/PressChain
+
+# App directories
+/home/press/PressChain/apps/portal
+/home/press/PressChain/apps/portal/app/page.tsx
+/home/press/PressChain/apps/portal/PressChainPortal_v8_admin_workflows.jsx
+
+# Static marketing site (Vite)
+/home/press/presschain-site
+/home/press/presschain-site/src/App.jsx
+/home/press/presschain-site/src/main.jsx
+
+# Apache proxy configs
+/etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/portal.presschain.io/proxy.conf
+/etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/court.presschain.io/proxy.conf
+/etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/status.presschain.io/proxy.conf
+```
+
+---
+
+## Verify Public Access
+
+```bash
+curl -I https://portal.presschain.io
+curl -I https://court.presschain.io
+curl -I https://status.presschain.io
+curl -I https://docs.presschain.io
+curl -I https://bridge.presschain.io/health
+```
+
+---
+
+## Ownership & Permissions
+
+```bash
+# Check ownership
+ls -lah /home/press/PressChain/apps/portal
+
+# Fix ownership after root operations
+chown -R press:press /home/press/PressChain
+
+# Quick file audit
+find /home/press/PressChain -maxdepth 3 -type f | head -30
+```
+
+---
+
+## Common Recovery Commands
+
+```bash
+# Backup before changes
+cp -av file.jsx file.jsx.bak.$(date +%Y%m%d_%H%M%S)
+
+# Full portal recovery sequence
+rm -rf /home/press/PressChain/apps/portal/.next
+cd /home/press/PressChain/apps/portal
+pnpm build
+sudo systemctl restart presschain-next@portal
+journalctl -u presschain-next@portal -n 50 --no-pager
+curl -I https://portal.presschain.io
+```

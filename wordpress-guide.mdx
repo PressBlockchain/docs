@@ -1,0 +1,68 @@
+---
+title: WordPress Guide
+description: Installing and using the PressChain SYNC plugin — connecting your newsroom's WordPress to the protocol.
+icon: wordpress
+---
+
+## What SYNC Does
+
+The SYNC plugin connects your WordPress site to PressChain. When you publish in WordPress, your article goes live on your site immediately — and SYNC creates a Capsule draft in the background for you to review and submit.
+
+**Cost:** 50 PRESS (one-time). All other PressChain WordPress functionality is free. On testnet, SYNC is free.
+
+## Installation
+
+<Steps>
+  <Step title="Purchase SYNC">
+    Portal → **Plugins** → **PressChain SYNC** → Pay 50 PRESS via PressKey. You receive a license key.
+  </Step>
+  <Step title="Install in WordPress">
+    WordPress admin → **Plugins** → **Add New** → **Upload Plugin** → Upload the `.zip` file → **Install Now** → **Activate**
+  </Step>
+  <Step title="Configure settings">
+    **Settings** → **PressChain SYNC**:
+
+    | Setting | Value |
+    |---|---|
+    | License Key | Paste from Portal |
+    | Outlet Slug | Your outlet's slug (e.g., `the-bay-tribune`) |
+    | Bridge URL | `https://bridge.presschain.io` |
+    | Auto-Stage Posts | On for busy newsrooms, Off to review each one |
+    | Press Feed Enabled | **Must be ON** |
+  </Step>
+  <Step title="Connect PressKey">
+    SYNC Settings → **Connect PressKey** → Approve in PressKey → Done. The outlet wallet is now linked.
+  </Step>
+</Steps>
+
+## The Gutenberg Panel
+
+Every post now has a **PressChain** panel in the sidebar showing:
+
+- Capsule draft status
+- Auto-suggested structured claims (review these)
+- Evidence upload area
+- Contributor list (author + editors)
+- Submit button
+
+When you're ready to submit, click **Submit to PressChain**. PressKey opens for your approval (30 PRESS fee). After approval, the Capsule enters the 72-hour acceptance window and the panel shows live vote progress.
+
+## The Press Network Feed Module
+
+Every SYNC outlet must display the Press Network feed. Add it anywhere on your site:
+
+```
+[presschain_press_feed limit="5"]
+```
+
+Or use the **PressChain Feed** Gutenberg block. This is mandatory — disabling it triggers a fee and distribution downgrade.
+
+## Troubleshooting
+
+| Issue | Fix |
+|---|---|
+| Panel missing in editor | Deactivate and reactivate SYNC |
+| "Outlet not active" error | Check domain verification in Portal |
+| "Session expired" | SYNC Settings → Re-connect PressKey |
+| Vote widget not showing | Capsule must be in active voting window |
+| Bridge connection error | Check `bridge.presschain.io/health` |

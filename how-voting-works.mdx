@@ -1,0 +1,156 @@
+---
+title: How Voting Works
+description: Who votes on your articles, how votes are weighted, and what the thresholds mean in practice.
+icon: check-to-slot
+---
+
+## The Core Idea
+
+No outlet can approve its own journalism on PressChain. There is no editorial override, no publisher bypass, no trust level that gets you through without public validation. Every article needs to earn its canonical status through a 72-hour public vote.
+
+This isn't a popularity contest. It's a structured, weighted, tamper-resistant process designed to reflect informed public judgment — not raw click volume.
+
+---
+
+## Who Can Vote
+
+Anyone with PressKey can vote. The system is open:
+
+| Role | Can Vote | Daily Limit |
+|---|---|---|
+| Citizen | ✓ Yes | Strict cap |
+| Contributor | ✓ Yes | Higher cap |
+| Reporter | ✓ Yes | Generous cap |
+| Verified Author | ✓ Yes | Very generous |
+| Media Validator | ✓ Yes | Unlimited (it's their role) |
+
+**Votes require PressKey.** No anonymous voting. Every vote is cryptographically signed by an identity that has economic accountability.
+
+---
+
+## The Two Requirements
+
+Both must be true at the end of the 72-hour window:
+
+<CardGroup cols={2}>
+  <Card title="60% Weighted Approval" icon="chart-bar" color="#009BF9">
+    At least 60% of all weighted votes must be "Yes." Not raw votes — *weighted* votes. A verified journalist's vote counts for more than a brand-new citizen's.
+  </Card>
+  <Card title="5% Quorum" icon="users" color="#002A43">
+    At least 5% of the total eligible weighted supply must participate. This prevents a tiny group from quietly approving content during off-hours.
+  </Card>
+</CardGroup>
+
+<Warning>
+If quorum isn't met, the Capsule is rejected **automatically** — even if every single vote cast was "Yes." This is the protocol's protection against off-hours manipulation.
+</Warning>
+
+---
+
+## Why Votes Aren't Equal
+
+Votes are weighted based on three things:
+
+**1. Your Role**
+
+| Role | Base Weight |
+|---|---|
+| Citizen | 1 |
+| Contributor | 2 |
+| Reporter | 3 |
+| Verified Author or Media Validator | 4 |
+
+**2. Your Reputation (0.5× to 2.0×)**
+
+Your reputation multiplier grows when:
+- You vote consistently over time
+- Your votes align with final court verdicts
+- You avoid spam behavior and inactivity
+
+It shrinks when:
+- You disappear for long periods
+- Your votes frequently contradict court outcomes
+- You're flagged for coordinated voting behavior
+
+**3. Your Bond Stability (1.0× to 1.15×)**
+
+A small bonus for long-term bonded participants. This prevents someone from bonding PRESS specifically to influence one vote, then leaving. Short-term bonders get no stability premium.
+
+### Real Example
+
+*Two voters both vote "Yes" on Maya's article about the city council.*
+
+| Voter | Role | Base | Reputation | Stability | Effective Weight |
+|---|---|---|---|---|---|
+| New Citizen | Citizen | 1 | 1.0× | 1.0× | **1.0** |
+| Established Reporter | Reporter | 3 | 1.8× | 1.12× | **6.05** |
+
+The experienced Reporter's vote counts for about 6× more than the new Citizen's. This reflects the reality that not all judgment is equal — experience and track record matter.
+
+---
+
+## What Happens at 72 Hours
+
+The window closes automatically. No one pushes a button.
+
+```
+If weighted approval ≥ 60% AND quorum ≥ 5%:
+  → Capsule ACCEPTED → Canonical → Distribution active
+  → Badge appears on article: "✓ Canonical on PressChain"
+
+If either threshold not met:
+  → Capsule REJECTED → Not Canonical
+  → Article stays live on your site without the badge
+```
+
+Finalization is recorded on-chain. The outcome is public and permanent.
+
+---
+
+## How to Vote on Another Outlet's Story
+
+1. Go to [portal.presschain.io](https://portal.presschain.io) → **Capsules** → **Pending Acceptance**
+2. Find a Capsule in its voting window
+3. Read the article and review the evidence
+4. Click **Yes** or **No**
+5. PressKey opens — you approve the signed vote
+6. Your vote is submitted and recorded
+
+You cannot change your vote after submission. Think before you vote.
+
+---
+
+## Anti-Manipulation Protections
+
+The protocol has several layers of protection against coordinated vote manipulation:
+
+- **Daily caps on Citizens** — prevents mass bot accounts from flooding a vote
+- **Reputation gates** — new accounts have minimal weight
+- **Bond stability** — flash-bonding for one vote earns no bonus
+- **Per-topic throttles** — auto-throttled during detected attack patterns
+- **PressKey required** — no anonymous participation
+
+---
+
+## How Voting Builds Your Reputation
+
+Every vote you cast becomes part of your reputation record. Specifically:
+
+- **Consistent participation** increases your reputation multiplier
+- **Votes that align with court verdicts** are scored positively after the fact
+- **Inactivity** causes slow decay
+- **Spam patterns** reduce your multiplier
+
+Over time, voters with good judgment and consistent participation earn higher effective weight — which makes their votes matter more. This is the protocol's way of rewarding good epistemic citizenship.
+
+---
+
+## Watching a Vote Live
+
+While your Capsule is in its acceptance window, you can watch in real time:
+
+- **In WordPress:** The Gutenberg SYNC panel shows live vote progress
+- **In Portal:** Your Capsule dashboard shows weighted yes/no and participation
+- **On Explorer:** `explorer.presschain.io/capsule/YOUR_ID` shows the full vote breakdown
+
+The vote is final at window close. There's no way to extend the window or request additional time.

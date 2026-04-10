@@ -1,0 +1,104 @@
+---
+title: Integrity Labels
+description: What each integrity label means, how they're applied, and what they mean for your journalism's future.
+icon: shield-check
+---
+
+## What Integrity Labels Are
+
+An integrity label is a permanent, on-chain marker applied to a Capsule that tells the public the authoritative status of that journalism. Labels are public, immutable, and permanent. Once applied, they can only be supplemented — never removed.
+
+Think of them as the public record of what happened to a piece of journalism over its lifetime.
+
+## The Labels
+
+<CardGroup cols={2}>
+  <Card title="✓ Verified" icon="circle-check" color="#009BF9">
+    Court reviewed your specific claims and evidence, and confirmed accuracy. This is the strongest endorsement the protocol can give. A Verified label commands premium pricing in the Rights Marketplace.
+  </Card>
+  <Card title="◎ Clean" icon="circle" color="#6B7280">
+    No disputes, no court intervention. Most canonical Capsules stay at Clean. It's the default state of accepted, unchallenged journalism.
+  </Card>
+  <Card title="⟳ Contested" icon="circle-exclamation" color="#F97316">
+    A court case is currently active. This label appears during the deliberation period and is replaced by the final verdict label when the case concludes.
+  </Card>
+  <Card title="? Unresolved" icon="circle-question" color="#6B7280">
+    Court concluded without a clear verdict — either insufficient juror participation or genuinely ambiguous evidence. Not a finding of inaccuracy, but not a clean bill either.
+  </Card>
+  <Card title="⚠ Misleading" icon="triangle-exclamation" color="#EF4444">
+    Court found material inaccuracy, missing context, or selective presentation that creates a false impression. Significant finding — reputation and distribution are affected.
+  </Card>
+  <Card title="✗ Fraudulent" icon="xmark-circle" color="#991B1B">
+    Court found deliberate deception or fabricated sources. The most serious finding. Automatic bond slashing. Severe reputation impact.
+  </Card>
+  <Card title="↩ Corrected" icon="rotate-left" color="#009BF9">
+    You published an accepted correction. The original stays with this label, and the correction becomes the authoritative version. Shows accountability.
+  </Card>
+  <Card title="⊘ Retracted" icon="ban" color="#002A43">
+    Author-initiated retraction. Article remains visible (no deletion) with this permanent label. The retraction reason is on record.
+  </Card>
+</CardGroup>
+
+## Where Labels Appear
+
+| Surface | How It Shows |
+|---|---|
+| Explorer | Prominent label below article title |
+| Your article page | Integrity badge in the article footer |
+| Press Network feed | Label shown in feed metadata |
+| Portal dashboard | Your Capsule list and individual views |
+| Rights Marketplace | Shown on license listing — affects buyer confidence |
+
+Labels propagate across all surfaces within 1–2 minutes of a verdict.
+
+## Real Impact of Each Label
+
+### Verified — What It Means to Have It
+
+Elena Santos's campaign finance investigation survived a formal legal challenge. Jurors reviewed all evidence and confirmed her reporting. Her Capsule is now labeled **Verified**.
+
+At the Rights Marketplace, *The National Times* pays 1,500 PRESS to license it — three times what an identical Clean article would command. The Verified label signals that this journalism held up under structured scrutiny. Buyers pay a premium for that.
+
+### Misleading — What Happens
+
+A court finds that David's article about a local business used accurate facts but in a context that implied something false. His Capsule is labeled **Misleading**.
+
+His outlet's distribution tier drops slightly. His acceptance rate for future articles remains strong because this was one article — but repeated Misleading findings would push the tier lower. He publishes a correction Capsule addressing the court's finding.
+
+### Fraudulent — The Most Serious Outcome
+
+Court finds that a Capsule contained fabricated quotes from a source that didn't exist. The label **Fraudulent** is applied. The journalist's Reporter bond is slashed automatically. Their reputation score drops significantly. Their outlet faces distribution consequences.
+
+The article remains on PressChain permanently — with the Fraudulent label permanently attached. No deletion. The record is the accountability.
+
+## Appealing a Label
+
+If you believe a verdict was wrong and you have new evidence that wasn't available during the original case:
+
+1. Go to [proposals.presschain.io](https://proposals.presschain.io)
+2. Submit an appeal proposal with the case ID and new evidence
+3. Lock an appeal bond (prevents frivolous appeals)
+4. Governance votes on whether to re-open the case
+
+<Warning>
+Appeals that are rejected result in bond forfeiture. Only appeal when you have genuinely new evidence — not simply because you disagree with the verdict.
+</Warning>
+
+## Your Integrity Timeline
+
+Every Capsule on the Explorer shows a complete integrity timeline — immutable, public, permanent:
+
+```
+Jan 1  — Submitted
+Jan 1  — Voting opened
+Jan 4  — Accepted (91% Yes, 7.3% quorum)
+Jan 4  — Finalized, canonical, distribution active  [Clean]
+Jan 8  — Dispute filed — Claim #2 (vote count)
+Jan 8  — Label updated: Clean → Contested
+Jan 14 — Evidence window closed
+Jan 15 — Juror deliberation complete
+Jan 15 — Verdict: Reporting confirmed accurate
+Jan 15 — Label updated: Contested → Verified
+```
+
+This timeline cannot be altered. It's the permanent public record of what happened to your journalism.

@@ -1,0 +1,200 @@
+---
+title: Troubleshooting
+description: Diagnostic commands and resolution patterns for every common failure mode.
+icon: wrench
+---
+
+## Triage First
+
+Run this before anything else:
+
+```bash
+# Is the chain alive?
+curl -s https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+  | python3 -c "import sys,json; print('Block:', int(json.load(sys.stdin)['result'],16))"
+
+# Is Bridge healthy?
+curl -s https://bridge.presschain.io/health | python3 -m json.tool
+
+# Are services running?
+systemctl status presschain-next@portal --no-pager -l
+systemctl status presschain-next@docs   --no-pager -l
+
+# Recent errors?
+journalctl -u presschain-next@portal -n 50 --no-pager | grep -i error
+```
+
+---
+
+## App Returns 502 / 503
+
+```bash
+# Check the service
+systemctl status presschain-next@portal --no-pager -l
+
+# View logs
+journalctl -u presschain-next@portal -n 100 --no-pager
+
+# Restart
+sudo systemctl restart presschain-next@portal
+
+# Verify
+curl -I https://portal.presschain.io
+```
+
+---
+
+## Apache Not Serving Correct Content
+
+```bash
+# Check Apache config and restart
+/scripts/rebuildhttpdconf && /scripts/restartsrv_httpd
+
+# Check domain log
+tail -50 /usr/local/apache/domlogs/presschain.io
+
+# Check error log
+tail -50 /usr/local/apache/logs/error_log
+
+# Verify proxy config exists for domain
+cat /etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/portal.presschain.io/proxy.conf
+```
+
+---
+
+## Build Fails / Stale .next Cache
+
+```bash
+# Full rebuild — clears Next.js cache
+cd /home/press/PressChain/apps/portal
+rm -rf .next
+pnpm build
+sudo systemctl restart presschain-next@portal
+journalctl -u presschain-next@portal -n 30 --no-pager
+```
+
+---
+
+## \cp Deploy Issue
+
+```bash
+# ALWAYS use backslash prefix — bypasses interactive alias
+\cp -rf dist/. /home/pcpressroot/public_html/
+
+# Wrong — will prompt for each file
+cp -rf dist/. /home/pcpressroot/public_html/
+
+# Verify alias issue
+type cp
+# → cp is aliased to `cp -i`
+```
+
+---
+
+## PressKey / Auth Failing (401)
+
+```bash
+# Test token validity
+curl -s https://bridge.presschain.io/wallet/0xYOUR_ADDRESS/roles \
+  -H "Authorization: Bearer YOUR_TOKEN"
+# 401 → token expired, re-auth in PressKey
+
+# Token expiry pattern — always get fresh token per action
+# Don't cache sessionToken across multiple requests
+```
+
+---
+
+## Capsule Stuck in Pending
+
+```bash
+# Check current state
+curl -s https://bridge.presschain.io/capsules/CAPSULE_ID | python3 -m json.tool
+
+# If window closed and still "pending" → trigger finalization
+curl https://bridge.presschain.io/capsules/CAPSULE_ID/accept \
+  -X POST \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"capsuleId": "CAPSULE_ID"}'
+```
+
+---
+
+## Domain Verification Failed / Outlet Suspended
+
+```bash
+# Check outlet status
+curl -s https://bridge.presschain.io/outlets/my-outlet | python3 -m json.tool
+
+# Verify DNS TXT record
+dig TXT my-outlet.com | grep presschain
+
+# Re-trigger verification after fixing DNS
+curl https://bridge.presschain.io/outlets/verify \
+  -X POST \
+  -H "Authorization: Bearer TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"outletSlug": "my-outlet", "method": "dns_txt"}'
+```
+
+---
+
+## Permissions Issue After Root Operations
+
+```bash
+# Fix ownership back to press user
+chown -R press:press /home/press/PressChain
+
+# Verify
+ls -lah /home/press/PressChain/apps/portal
+```
+
+---
+
+## Block Production Stalled
+
+```bash
+# Check block number (run twice 10s apart — should increment)
+for i in 1 2; do
+  curl -s https://rpc.presschain.io \
+    -X POST -H "Content-Type: application/json" \
+    -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+    | python3 -c "import sys,json; print('Block:', int(json.load(sys.stdin)['result'],16))"
+  sleep 10
+done
+
+# Check chain service logs
+journalctl -u presschain-node -n 50 --no-pager 2>/dev/null \
+  || docker compose logs evm-node --tail=50 2>/dev/null
+```
+
+---
+
+## Health Check Script
+
+```bash
+#!/bin/bash
+echo "=== Chain ===" && \
+curl -s https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+  | python3 -c "import sys,json; print('Block:', int(json.load(sys.stdin).get('result','0x0'),16))" 2>/dev/null
+
+echo "=== Bridge ===" && \
+curl -s https://bridge.presschain.io/health | python3 -c "import sys,json; d=json.load(sys.stdin); print('Status:', d.get('status'))"
+
+echo "=== Services ===" && \
+for s in portal outlet court proposals ads status docs faucet; do
+  st=$(systemctl is-active presschain-next@$s 2>/dev/null)
+  echo "  $s: $st"
+done
+
+echo "=== Public ===" && \
+for url in portal.presschain.io court.presschain.io status.presschain.io docs.presschain.io; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" https://$url)
+  echo "  $url: $code"
+done
+```

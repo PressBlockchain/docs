@@ -1,0 +1,115 @@
+---
+title: Introduction
+description: What PressChain is for developers, how the stack fits together, and where to start.
+icon: rocket
+---
+
+<Info>
+**TL;DR** — PressChain is an EVM-compatible L1. If you know Solidity, ethers.js, and REST APIs, you know 80% of what you need. The remaining 20% is the Capsule Standard, the Acceptance Engine, and the Bridge API.
+</Info>
+
+## What You're Building On
+
+PressChain runs full EVM execution. Contracts govern capsule publishing, role bonding, acceptance voting, and court resolution. The **Bridge API** is a REST middleware layer that normalizes chain data for outlet and dApp integrations. **PressKey** handles all signing and identity.
+
+```
+┌──────────────────────────────────────────┐
+│        Your App / Outlet / dApp          │
+└────────────────────┬─────────────────────┘
+                     │ HTTPS
+┌────────────────────▼─────────────────────┐
+│         Bridge API (middleware)          │
+│      bridge.presschain.io                │
+│   Bearer auth · normalizes chain data   │
+└────────────────────┬─────────────────────┘
+                     │ JSON-RPC / ethers
+┌────────────────────▼─────────────────────┐
+│          PressChain EVM Node             │
+│      rpc.presschain.io · ID 77117002     │
+│  ArticleRegistry · CapsuleAcceptance     │
+│  OutletMembership · BondManager · …     │
+└──────────────────────────────────────────┘
+```
+
+## Four Rules Before You Write a Line of Code
+
+<Warning>
+These are architectural rules, not suggestions. Breaking them creates security and audit problems.
+</Warning>
+
+<Steps>
+  <Step title="WordPress and outlet apps never touch RPC">
+    Your application calls the Bridge API. The chain is accessed through API Gateway → Bridge → Protocol API. This is non-negotiable.
+  </Step>
+  <Step title="PressKey signs everything">
+    Every write action — voting, publishing, role purchases, court participation — requires a PressKey-signed nonce. You never handle raw private keys in your app layer.
+  </Step>
+  <Step title="The Bridge is your stable surface">
+    Chain data can change shape between protocol versions. Build against `bridge.presschain.io` routes, not raw RPC, unless you're building validator or node tooling.
+  </Step>
+  <Step title="Capsule state is the source of truth">
+    Never cache acceptance state for more than one block. A Capsule has permanent identity and permanent history — query fresh.
+  </Step>
+</Steps>
+
+## Quick Environment Setup
+
+```bash
+# Add PressChain Testnet to MetaMask or PressKey
+Network Name:   PressChain Testnet
+RPC URL:        https://rpc.presschain.io
+Chain ID:       77117002
+Currency:       PRESS
+Explorer:       https://explorer.presschain.io
+
+# Get free testnet PRESS
+curl https://faucet.presschain.io/api/drip \
+  -X POST -H "Content-Type: application/json" \
+  -d '{"address": "0xYOUR_ADDRESS"}'
+
+# Bridge health check
+curl https://bridge.presschain.io/health
+# → {"status":"ok","service":"presschain-bridge","chainId":77117002}
+```
+
+## ethers v6 Provider
+
+```typescript
+import { JsonRpcProvider } from "ethers";
+
+const provider = new JsonRpcProvider("https://rpc.presschain.io");
+const network = await provider.getNetwork();
+console.log(network.chainId); // 77117002n
+```
+
+## Runtime Ports (for operators)
+
+| App | Port | Service |
+|---|---|---|
+| Portal | 3010 | `presschain-next@portal` |
+| Outlet | 3011 | `presschain-next@outlet` |
+| Court | 3012 | `presschain-next@court` |
+| Proposals | 3013 | `presschain-next@proposals` |
+| Ads | 3014 | `presschain-next@ads` |
+| Status | 3015 | `presschain-next@status` |
+| Docs | 3016 | `presschain-next@docs` |
+| Faucet | 3017 | `presschain-next@faucet` |
+
+Internal services run on ports 46100–46109. Chain RPC on 8545/8546 (mainnet) and 9545/9546 (testnet). All internal — only 80/443 exposed publicly.
+
+## Where to Go Next
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="bolt" href="/developer/quickstart">
+    Deploy a contract call and read your first Capsule in under 10 minutes.
+  </Card>
+  <Card title="Architecture Overview" icon="sitemap" href="/developer/architecture/overview">
+    Domain separation, service topology, and why the stack is built this way.
+  </Card>
+  <Card title="Contract Registry" icon="file-contract" href="/developer/chain/contracts">
+    All deployed addresses with descriptions and ABI references.
+  </Card>
+  <Card title="Bridge API" icon="webhook" href="/developer/integrations/bridge-api">
+    Full route reference. The primary integration surface for everything.
+  </Card>
+</CardGroup>

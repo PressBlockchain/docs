@@ -1,0 +1,169 @@
+---
+title: Chain Configuration
+description: Network IDs, RPC URLs, WebSocket endpoints, wallet setup, and connection examples.
+icon: link
+---
+
+## Network Reference
+
+<CardGroup cols={2}>
+  <Card title="Testnet" icon="flask" color="#009BF9">
+    **Chain ID** `77117002`  
+    **RPC** `https://rpc.presschain.io`  
+    **Testnet RPC** `https://testnet-rpc.presschain.io`  
+    **WS** `wss://ws.presschain.io`  
+    **Archive** `https://archive.rpc.presschain.io`  
+    **Explorer** `https://explorer.presschain.io`  
+    **Faucet** `https://faucet.presschain.io`
+  </Card>
+  <Card title="Mainnet" icon="link" color="#002A43">
+    **Chain ID** `77117001`  
+    **RPC** `https://rpc.presschain.io`  
+    **Token** PRESS  
+    **Supply** 100,000,000 PRESS fixed  
+    **Inflation** None
+  </Card>
+</CardGroup>
+
+## Add to Wallet
+
+```json
+{
+  "chainId": "0x499B4DA",
+  "chainName": "PressChain Testnet",
+  "nativeCurrency": {
+    "name": "PRESS",
+    "symbol": "PRESS",
+    "decimals": 18
+  },
+  "rpcUrls": ["https://rpc.presschain.io"],
+  "blockExplorerUrls": ["https://explorer.presschain.io"]
+}
+```
+
+```typescript
+// Add via ethers.js
+await window.ethereum.request({
+  method: "wallet_addEthereumChain",
+  params: [{
+    chainId: "0x499B4DA",   // 77117002
+    chainName: "PressChain Testnet",
+    nativeCurrency: { name: "PRESS", symbol: "PRESS", decimals: 18 },
+    rpcUrls: ["https://rpc.presschain.io"],
+    blockExplorerUrls: ["https://explorer.presschain.io"]
+  }]
+});
+```
+
+## Next.js Environment Variables
+
+```bash
+# .env.local — matches production env schema
+NEXT_PUBLIC_CHAIN_NAME=PressChain Testnet
+NEXT_PUBLIC_CHAIN_ID=77117002
+NEXT_PUBLIC_MAINNET_CHAIN_ID=77117001
+NEXT_PUBLIC_RPC_URL=https://rpc.presschain.io
+NEXT_PUBLIC_TESTNET_RPC_URL=https://testnet-rpc.presschain.io
+NEXT_PUBLIC_EXPLORER_URL=https://explorer.presschain.io
+NEXT_PUBLIC_BRIDGE_URL=https://bridge.presschain.io
+NEXT_PUBLIC_STATUS_URL=https://status.presschain.io
+NEXT_PUBLIC_DOCS_URL=https://docs.presschain.io
+NEXT_PUBLIC_FAUCET_URL=https://faucet.presschain.io
+NEXT_PUBLIC_PORTAL_URL=https://portal.presschain.io
+NEXT_PUBLIC_PRESSKEY_URL=https://key.presschain.io
+NEXT_PUBLIC_SUPPORT_EMAIL=support@presschain.io
+NEXT_PUBLIC_DEFAULT_OUTLET=presshash
+
+# Feature flags
+NEXT_PUBLIC_ENABLE_DEMO_MODE=true
+NEXT_PUBLIC_ENABLE_TEST_MODE=true
+NEXT_PUBLIC_ENABLE_FAUCET=true
+NEXT_PUBLIC_ENABLE_DISPUTES=true
+NEXT_PUBLIC_ENABLE_RIGHTS=true
+NEXT_PUBLIC_ENABLE_SUPPORTING_CAPSULES=true
+NEXT_PUBLIC_ENABLE_CAPSULE_EXPORTS=true
+NEXT_PUBLIC_ENABLE_HISTORY_EXPORTS=true
+NEXT_PUBLIC_ENABLE_OUTLET_ADMIN=true
+NEXT_PUBLIC_ENABLE_ROLE_MANAGEMENT=true
+```
+
+## ethers.js v6
+
+```typescript
+import { JsonRpcProvider, WebSocketProvider } from "ethers";
+
+// HTTP — standard queries + tx submission
+const provider = new JsonRpcProvider("https://rpc.presschain.io");
+
+// Archive — historical state, all block history
+const archive = new JsonRpcProvider("https://archive.rpc.presschain.io");
+
+// WebSocket — real-time blocks and events
+const ws = new WebSocketProvider("wss://ws.presschain.io");
+
+// Verify
+const net = await provider.getNetwork();
+console.log(net.chainId); // 77117002n
+```
+
+## viem
+
+```typescript
+import { createPublicClient, http } from "viem";
+import { defineChain } from "viem";
+
+export const presschain = defineChain({
+  id: 77117002,
+  name: "PressChain Testnet",
+  nativeCurrency: { decimals: 18, name: "PRESS", symbol: "PRESS" },
+  rpcUrls: {
+    default: {
+      http: ["https://rpc.presschain.io"],
+      webSocket: ["wss://ws.presschain.io"],
+    },
+  },
+  blockExplorers: {
+    default: { name: "PressChain Explorer", url: "https://explorer.presschain.io" },
+  },
+});
+
+const client = createPublicClient({ chain: presschain, transport: http() });
+```
+
+## Bridge Config Endpoint
+
+Always fetch live config at app startup:
+
+```bash
+GET https://bridge.presschain.io/config
+```
+
+```json
+{
+  "service": "presschain-bridge",
+  "network": "PressChain Testnet",
+  "chainId": 77117002,
+  "rpcUrl": "https://rpc.presschain.io",
+  "bridgeUrl": "https://bridge.presschain.io"
+}
+```
+
+<Tip>
+Fetch `/config` at startup rather than hardcoding values. This ensures your app adapts to network changes without a redeploy.
+</Tip>
+
+## Chain ID Hex Reference
+
+| Network | Decimal | Hex |
+|---|---|---|
+| PressChain Testnet | 77117002 | `0x499B4DA` |
+| PressChain Mainnet | 77117001 | `0x499B4D9` |
+
+## Internal RPC (Server-Side Only)
+
+| Chain | HTTP | WebSocket |
+|---|---|---|
+| Mainnet | `127.0.0.1:8545` | `127.0.0.1:8546` |
+| Testnet | `127.0.0.1:9545` | `127.0.0.1:9546` |
+
+These are internal-only. Never expose them publicly.

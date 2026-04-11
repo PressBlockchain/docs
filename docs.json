@@ -3,11 +3,11 @@
   "name": "PressChain",
   "theme": "mint",
   "logo": {
-    "light": "https://presschain.io/press-logo.png",
-    "dark": "https://presschain.io/press-logo.png",
+    "light": "https://presschain.io/Main.png",
+    "dark": "https://presschain.io/Main.png",
     "href": "https://docs.presschain.io"
   },
-  "favicon": "https://presschain.io/press-logo.png",
+  "favicon": "https://presschain.io/Main.png",
   "colors": {
     "primary": "#009BF9",
     "light": "#38B6FF",
@@ -34,7 +34,7 @@
       "anchors": [
         {
           "anchor": "GitHub",
-          "href": "https://github.com/presslabs",
+          "href": "https://github.com/PressBlockchain/",
           "icon": "github"
         },
         {
@@ -55,12 +55,6 @@
       ]
     },
     "tabs": [
-      {
-        "tab": "Home",
-        "pages": [
-          "index"
-        ]
-      },
       {
         "tab": "Developer",
         "groups": [
@@ -192,7 +186,7 @@
   "footer": {
     "socials": {
       "twitter": "https://twitter.com/presschain_io",
-      "github": "https://github.com/presslabs"
+      "github": "https://github.com/PressBlockchain/"
     }
   }
 }

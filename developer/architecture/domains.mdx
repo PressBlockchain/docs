@@ -1,14 +1,14 @@
 ---
 title: Domains & Apps
-description: Every protocol surface under presschain.io — what each app does, its port, who owns it, and how it fits into the stack.
+description: Every protocol surface under presschain.io - what each app does, its port, who owns it, and how it fits into the stack.
 icon: globe
 ---
 
 ## The Naming Principle
 
-All canonical protocol infrastructure lives permanently under `presschain.io`. This is intentional and load-bearing. As PressChain decentralizes, operators behind these URLs can change — the URLs themselves never need to. Community-run RPC nodes can serve `rpc.presschain.io` without breaking any integration anywhere.
+All canonical protocol infrastructure lives permanently under `presschain.io`. This is intentional and load-bearing. As PressChain decentralizes, operators behind these URLs can change - the URLs themselves never need to. Community-run RPC nodes can serve `rpc.presschain.io` without breaking any integration anywhere.
 
-`presslabs.io` hosts everything organizational — legal, grants, careers, node sales. PressLabs does not host RPC, explorer, or any dApp. This separation is what keeps the protocol from looking corporate-controlled.
+`presslabs.io` hosts everything organizational - legal, grants, careers, node sales. PressLabs does not host RPC, explorer, or any dApp. This separation is what keeps the protocol from looking corporate-controlled.
 
 ---
 
@@ -22,7 +22,7 @@ presschain.io namespace
 ├── archive.rpc.presschain.io   Archive node (full state history)
 ├── ws.presschain.io            WebSocket RPC (real-time subscriptions)
 │
-├── bridge.presschain.io        Bridge API middleware  — internal port varies
+├── bridge.presschain.io        Bridge API middleware  - internal port varies
 │
 ├── portal.presschain.io        Outlet control plane  [port 3010]
 ├── outlet.presschain.io        Outlet-facing app     [port 3011]
@@ -160,10 +160,10 @@ chown -R pcpressroot:pcpressroot /home/pcpressroot/public_html/
 
 ---
 
-## presslabs.io — What Lives Here
+## presslabs.io - What Lives Here
 
 <Note>
-PressLabs is the steward organization, not the chain. `presslabs.io` hosts everything commercial and organizational — never protocol infrastructure.
+PressLabs is the steward organization, not the chain. `presslabs.io` hosts everything commercial and organizational - never protocol infrastructure.
 </Note>
 
 - Legal disclosures and terms of service
@@ -185,8 +185,8 @@ PressLabs is the steward organization, not the chain. `presslabs.io` hosts every
 | `testnet-rpc.presschain.io` | JSON-RPC HTTP | Testnet only. Chain ID 77117002. |
 | `archive.rpc.presschain.io` | Archive JSON-RPC | Full historical state. All block history from genesis. |
 | `ws.presschain.io` | WebSocket | Real-time block and event subscriptions. |
-| `127.0.0.1:8545` | Internal HTTP | Mainnet. Server-side only — never expose publicly. |
-| `127.0.0.1:9545` | Internal HTTP | Testnet. Server-side only — never expose publicly. |
+| `127.0.0.1:8545` | Internal HTTP | Mainnet. Server-side only - never expose publicly. |
+| `127.0.0.1:9545` | Internal HTTP | Testnet. Server-side only - never expose publicly. |
 
 ---
 

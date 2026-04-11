@@ -4,31 +4,34 @@ description: What PressChain is for developers, how the stack fits together, and
 icon: rocket
 ---
 
-<Info>
-**TL;DR** — PressChain is an EVM-compatible L1. If you know Solidity, ethers.js, and REST APIs, you know 80% of what you need. The remaining 20% is the Capsule Standard, the Acceptance Engine, and the Bridge API.
-</Info>
+<div className="pc-hero">
+  <div className="pc-badge">
+    <div className="pc-badge-dot" />
+    EVM-Compatible · Chain ID 77117002
+  </div>
+  <h1 className="pc-hero-title">Build on the<br /><em>journalism layer</em></h1>
+  <p className="pc-hero-sub">
+    PressChain is an EVM-compatible L1 with a journalism-specific protocol on top. If you know Solidity, ethers.js, and REST APIs, you already know 80% of what you need.
+  </p>
+  <div className="pc-hero-ctas">
+    <a href="/developer/quickstart" className="pc-btn-primary">Quickstart</a>
+    <a href="/developer/chain/contracts" className="pc-btn-secondary">Contract Registry</a>
+  </div>
+</div>
 
-## What You're Building On
+## What You Are Building On
 
-PressChain runs full EVM execution. Contracts govern capsule publishing, role bonding, acceptance voting, and court resolution. The **Bridge API** is a REST middleware layer that normalizes chain data for outlet and dApp integrations. **PressKey** handles all signing and identity.
+PressChain runs full EVM execution. Contracts govern Capsule publishing, role bonding, acceptance voting, and court resolution. The **Bridge API** is a REST middleware layer that normalizes chain data for outlet and dApp integrations. **PressKey** handles all signing and identity.
 
 ```
-┌──────────────────────────────────────────┐
-│        Your App / Outlet / dApp          │
-└────────────────────┬─────────────────────┘
-                     │ HTTPS
-┌────────────────────▼─────────────────────┐
-│         Bridge API (middleware)          │
-│      bridge.presschain.io                │
-│   Bearer auth · normalizes chain data   │
-└────────────────────┬─────────────────────┘
-                     │ JSON-RPC / ethers
-┌────────────────────▼─────────────────────┐
-│          PressChain EVM Node             │
-│      rpc.presschain.io · ID 77117002     │
-│  ArticleRegistry · CapsuleAcceptance     │
-│  OutletMembership · BondManager · …     │
-└──────────────────────────────────────────┘
+Your App / Outlet / dApp
+         |  HTTPS
+Bridge API (middleware)
+bridge.presschain.io - Bearer auth - normalizes chain data
+         |  JSON-RPC / ethers
+PressChain EVM Node
+rpc.presschain.io - ID 77117002
+ArticleRegistry - CapsuleAcceptance - BondManager
 ```
 
 ## Four Rules Before You Write a Line of Code
@@ -39,16 +42,16 @@ These are architectural rules, not suggestions. Breaking them creates security a
 
 <Steps>
   <Step title="WordPress and outlet apps never touch RPC">
-    Your application calls the Bridge API. The chain is accessed through API Gateway → Bridge → Protocol API. This is non-negotiable.
+    Your application calls the Bridge API. The chain is accessed through API Gateway - Bridge - Protocol API. This is non-negotiable.
   </Step>
   <Step title="PressKey signs everything">
-    Every write action — voting, publishing, role purchases, court participation — requires a PressKey-signed nonce. You never handle raw private keys in your app layer.
+    Every write action - voting, publishing, role purchases, court participation - requires a PressKey-signed nonce. You never handle raw private keys in your app layer.
   </Step>
   <Step title="The Bridge is your stable surface">
-    Chain data can change shape between protocol versions. Build against `bridge.presschain.io` routes, not raw RPC, unless you're building validator or node tooling.
+    Chain data can change shape between protocol versions. Build against `bridge.presschain.io` routes, not raw RPC, unless you are building validator or node tooling.
   </Step>
   <Step title="Capsule state is the source of truth">
-    Never cache acceptance state for more than one block. A Capsule has permanent identity and permanent history — query fresh.
+    Never cache acceptance state for more than one block. A Capsule has permanent identity and permanent history - query fresh.
   </Step>
 </Steps>
 
@@ -69,7 +72,7 @@ curl https://faucet.presschain.io/api/drip \
 
 # Bridge health check
 curl https://bridge.presschain.io/health
-# → {"status":"ok","service":"presschain-bridge","chainId":77117002}
+# {"status":"ok","service":"presschain-bridge","chainId":77117002}
 ```
 
 ## ethers v6 Provider
@@ -82,20 +85,37 @@ const network = await provider.getNetwork();
 console.log(network.chainId); // 77117002n
 ```
 
-## Runtime Ports (for operators)
+## Runtime Ports (Operators)
 
-| App | Port | Service |
-|---|---|---|
-| Portal | 3010 | `presschain-next@portal` |
-| Outlet | 3011 | `presschain-next@outlet` |
-| Court | 3012 | `presschain-next@court` |
-| Proposals | 3013 | `presschain-next@proposals` |
-| Ads | 3014 | `presschain-next@ads` |
-| Status | 3015 | `presschain-next@status` |
-| Docs | 3016 | `presschain-next@docs` |
-| Faucet | 3017 | `presschain-next@faucet` |
+<div className="pc-section-label">Public apps</div>
+<div className="pc-data-grid">
+  <div className="pc-data-item"><span className="pc-data-label">presschain-next@portal</span><span className="pc-data-val">3010</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">presschain-next@outlet</span><span className="pc-data-val">3011</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">presschain-next@court</span><span className="pc-data-val">3012</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">presschain-next@proposals</span><span className="pc-data-val">3013</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">presschain-next@ads</span><span className="pc-data-val">3014</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">presschain-next@status</span><span className="pc-data-val">3015</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">presschain-next@docs</span><span className="pc-data-val">3016</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">presschain-next@faucet</span><span className="pc-data-val">3017</span></div>
+</div>
 
-Internal services run on ports 46100–46109. Chain RPC on 8545/8546 (mainnet) and 9545/9546 (testnet). All internal — only 80/443 exposed publicly.
+<div className="pc-section-label">Internal services</div>
+<div className="pc-data-grid">
+  <div className="pc-data-item"><span className="pc-data-label">gateway</span><span className="pc-data-val">46100</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">protocol-api</span><span className="pc-data-val">46101</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">indexer</span><span className="pc-data-val">46102</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">court-engine</span><span className="pc-data-val">46103</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">media-engine</span><span className="pc-data-val">46104</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">burn-engine</span><span className="pc-data-val">46105</span></div>
+</div>
+
+<div className="pc-section-label">Chain RPC (internal only)</div>
+<div className="pc-data-grid">
+  <div className="pc-data-item"><span className="pc-data-label">Mainnet HTTP</span><span className="pc-data-val">8545</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">Mainnet WS</span><span className="pc-data-val">8546</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">Testnet HTTP</span><span className="pc-data-val">9545</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">Testnet WS</span><span className="pc-data-val">9546</span></div>
+</div>
 
 ## Where to Go Next
 

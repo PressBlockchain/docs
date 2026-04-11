@@ -14,7 +14,7 @@ Your App
    │ window.presskey.request({ action: "..." })
    ▼
 PressKey Extension (local)
-   │ Signs with private key — never leaves device
+   │ Signs with private key - never leaves device
    ▼
 Returns: { signature, sessionToken, address }
    │
@@ -92,7 +92,7 @@ const tx = await signer.sendTransaction({
 
 ## Session Token Pattern
 
-Every write action needs a fresh session token from PressKey. Tokens expire — don't cache them for more than one action.
+Every write action needs a fresh session token from PressKey. Tokens expire - don't cache them for more than one action.
 
 ```typescript
 async function voteCapsule(capsuleId: string, support: boolean) {
@@ -103,7 +103,7 @@ async function voteCapsule(capsuleId: string, support: boolean) {
     support,
   });
 
-  // 2. Forward to Bridge — token is single-use + short-lived
+  // 2. Forward to Bridge - token is single-use + short-lived
   const res = await fetch(
     `https://bridge.presschain.io/capsules/${capsuleId}/accept`,
     {

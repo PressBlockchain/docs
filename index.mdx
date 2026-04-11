@@ -1,112 +1,162 @@
 ---
-title: PressChain
-description: The sovereign blockchain protocol that makes journalism permanently verifiable, publicly accountable, and economically fair.
-mode: "custom"
+title: PressChain Documentation
+description: The sovereign blockchain protocol that makes journalism permanently verifiable, publicly validated, and economically fair.
 ---
 
-<div style={{background: "linear-gradient(160deg, #F3FAFF 0%, #EEF7FF 40%, #F8FCFF 100%)", borderRadius: "20px", padding: "56px 48px 48px", marginBottom: "40px", border: "1px solid rgba(0,155,249,0.12)", position: "relative", overflow: "hidden"}}>
-  <div style={{position: "absolute", top: 0, right: 0, width: "400px", height: "400px", background: "radial-gradient(circle, rgba(0,155,249,0.08) 0%, transparent 70%)", pointerEvents: "none"}} />
-  <div style={{position: "absolute", bottom: "-60px", left: "-60px", width: "300px", height: "300px", background: "radial-gradient(circle, rgba(0,43,67,0.04) 0%, transparent 70%)", pointerEvents: "none"}} />
-
-  <div style={{display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(0,155,249,0.1)", border: "1px solid rgba(0,155,249,0.25)", borderRadius: "999px", padding: "4px 14px", marginBottom: "24px"}}>
-    <div style={{width: "6px", height: "6px", borderRadius: "50%", background: "#009BF9", boxShadow: "0 0 6px rgba(0,155,249,0.8)"}} />
-    <span style={{fontFamily: "'Nunito', sans-serif", fontSize: "0.72rem", fontWeight: 800, letterSpacing: "0.1em", textTransform: "uppercase", color: "#009BF9"}}>Testnet Live · Chain ID 77117002</span>
+<div className="pc-hero">
+  <div className="pc-badge">
+    <div className="pc-badge-dot" />
+    Testnet Live · EVM-Compatible Layer 1
   </div>
-
-  <h1 style={{fontFamily: "'DM Serif Display', serif", fontSize: "clamp(2.4rem, 5vw, 3.6rem)", color: "#002A43", lineHeight: 1.1, marginBottom: "20px", marginTop: 0}}>
-    Where Journalism<br />Becomes<em style={{color: "#009BF9"}}> Canonical</em>
+  <h1 className="pc-hero-title">
+    Journalism that no one<br />can <em>take back</em>
   </h1>
-
-  <p style={{fontFamily: "'Nunito', sans-serif", fontSize: "1.15rem", color: "#004F84", maxWidth: "600px", lineHeight: 1.7, marginBottom: "32px", fontWeight: 500}}>
-    PressChain is a sovereign, EVM-compatible Layer 1 blockchain built for journalism. Public acceptance. Immutable revision lineage. On-chain court resolution. Deterministic revenue routing. No deletion. Ever.
+  <p className="pc-hero-sub">
+    PressChain is a sovereign Layer 1 blockchain built for the news industry. Public acceptance. Immutable evidence. On-chain dispute resolution. Revenue that routes directly to the journalists who earned it.
   </p>
-
-  <div style={{display: "flex", gap: "12px", flexWrap: "wrap"}}>
-    <a href="/developer/introduction" style={{display: "inline-flex", alignItems: "center", gap: "8px", background: "#002A43", color: "white", borderRadius: "10px", padding: "12px 24px", fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: "0.95rem", textDecoration: "none", boxShadow: "0 4px 16px rgba(0,43,67,0.3)"}}>
-      Start Building →
-    </a>
-    <a href="/journalist/welcome" style={{display: "inline-flex", alignItems: "center", gap: "8px", background: "white", color: "#009BF9", borderRadius: "10px", padding: "12px 24px", fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: "0.95rem", textDecoration: "none", border: "1px solid rgba(0,155,249,0.3)", boxShadow: "0 2px 8px rgba(0,155,249,0.1)"}}>
-      For Journalists
-    </a>
+  <div className="pc-hero-ctas">
+    <a href="/developer/introduction" className="pc-btn-primary">Start Building</a>
+    <a href="/journalist/welcome" className="pc-btn-secondary">For Journalists</a>
   </div>
 </div>
 
-## Choose Your Path
+<div className="pc-paths">
+  <a href="/journalist/welcome" className="pc-path pc-path-journalist">
+    <div className="pc-path-icon">✍️</div>
+    <div className="pc-path-label">Reporters and Editors</div>
+    <div className="pc-path-title">Publish. Protect. Earn.</div>
+    <p className="pc-path-desc">Understand Capsules, how public acceptance works, how to protect your sources, and how to earn directly from your journalism.</p>
+    <span className="pc-path-link">Read the journalist guide →</span>
+  </a>
+  <a href="/developer/introduction" className="pc-path pc-path-developer">
+    <div className="pc-path-icon">⚡</div>
+    <div className="pc-path-label">Engineers and Builders</div>
+    <div className="pc-path-title">Chain, Bridge, Contracts</div>
+    <p className="pc-path-desc">EVM-compatible L1. Full contract registry, Bridge API reference, PressKey integration, and operator deployment guides.</p>
+    <span className="pc-path-link">Read the developer docs →</span>
+  </a>
+  <a href="/journalist/outlets/register-your-newsroom" className="pc-path pc-path-outlet">
+    <div className="pc-path-icon">🏛️</div>
+    <div className="pc-path-label">Publishers and Outlets</div>
+    <div className="pc-path-title">Register Your Newsroom</div>
+    <p className="pc-path-desc">Onboard your outlet, verify your domain, connect WordPress, and unlock rights licensing and distribution on the Press Network.</p>
+    <span className="pc-path-link">Onboard your outlet →</span>
+  </a>
+</div>
 
-<CardGroup cols={2}>
-  <Card title="Developer Docs" icon="code" href="/developer/introduction" color="#009BF9">
-    Chain config, contract registry, Bridge API, PressKey integration, operator deployment, and the full Capsule schema. Build production apps on PressChain.
-  </Card>
-  <Card title="Journalist & Reporter Guide" icon="newspaper" href="/journalist/welcome" color="#002A43">
-    Plain-language guides to publishing, evidence, voting, disputes, and earning revenue. No blockchain knowledge required.
-  </Card>
-</CardGroup>
+## How the Protocol Works
 
----
+<div className="pc-steps-row">
+  <div className="pc-step-cell">
+    <span className="pc-step-num">01 — Publish</span>
+    <div className="pc-step-title">Submit a Capsule</div>
+    <p className="pc-step-desc">Your article becomes a protocol object with hash-committed evidence, structured claims, and cryptographic author identity.</p>
+  </div>
+  <div className="pc-step-cell">
+    <span className="pc-step-num">02 — Vote</span>
+    <div className="pc-step-title">Public Accepts It</div>
+    <p className="pc-step-desc">A 72-hour weighted vote. 60% approval and 5% quorum required. No entity can self-approve. No algorithm controls the outcome.</p>
+  </div>
+  <div className="pc-step-cell">
+    <span className="pc-step-num">03 — Canonical</span>
+    <div className="pc-step-title">Permanent on Chain</div>
+    <p className="pc-step-desc">Accepted articles are immutable. Corrections create revision lineage. The public record is complete and cannot be erased.</p>
+  </div>
+  <div className="pc-step-cell">
+    <span className="pc-step-num">04 — Earn</span>
+    <div className="pc-step-title">Revenue Routes Directly</div>
+    <p className="pc-step-desc">Rights licensing and ad revenue split on-chain between contributors by their basis-point share. Instant. No intermediary.</p>
+  </div>
+</div>
 
-## Five Things That Make PressChain Different
+## Protocol Capabilities
 
-<CardGroup cols={3}>
-  <Card title="No Deletion. Ever." icon="ban" color="#002A43">
-    Canonical content is permanent. Corrections create revision lineage — not erasure. The public record of journalism stays intact.
-  </Card>
-  <Card title="Public Acceptance" icon="users" color="#009BF9">
-    No outlet can self-approve. Every article needs 60% weighted public approval and 5% quorum to become canonical.
-  </Card>
-  <Card title="Claim-Level Disputes" icon="gavel" color="#009BF9">
-    Challenges go to the on-chain Court engine, targeting specific claims with evidence and bonded jurors. Process, not deletion.
-  </Card>
-  <Card title="Deterministic Revenue" icon="route" color="#002A43">
-    Every fee is split on-chain. Every distribution decision is auditable. No platform controls where the money goes.
-  </Card>
-  <Card title="Evidence on Chain" icon="shield-check" color="#009BF9">
-    Source documents are hash-committed on-chain at publication. Tampering is provable. Sources can't be denied.
-  </Card>
-  <Card title="Rights Marketplace" icon="copyright" color="#002A43">
-    Accepted articles can be licensed commercially. Revenue splits between contributors automatically, on-chain, instantly.
-  </Card>
-</CardGroup>
+<div className="pc-caps">
+  <div className="pc-cap">
+    <span className="pc-cap-icon">🔗</span>
+    <div className="pc-cap-title">EVM-Compatible L1</div>
+    <p className="pc-cap-desc">Full Ethereum toolchain compatibility. Deploy Solidity contracts, connect ethers.js or viem, use any EVM wallet. Chain ID 77117002 (testnet) and 77117001 (mainnet).</p>
+  </div>
+  <div className="pc-cap">
+    <span className="pc-cap-icon">📦</span>
+    <div className="pc-cap-title">The Capsule Standard</div>
+    <p className="pc-cap-desc">Journalism as a governance object. Structured claims, hash-committed evidence, contributor records, acceptance state, revision lineage, and economic routing — all in one protocol primitive.</p>
+  </div>
+  <div className="pc-cap">
+    <span className="pc-cap-icon">⚖️</span>
+    <div className="pc-cap-title">On-Chain Court Engine</div>
+    <p className="pc-cap-desc">Disputes target specific claims with evidence windows and randomly selected bonded jurors. Verdicts assign permanent integrity labels. Process replaces censorship.</p>
+  </div>
+  <div className="pc-cap">
+    <span className="pc-cap-icon">🔑</span>
+    <div className="pc-cap-title">PressKey Identity Layer</div>
+    <p className="pc-cap-desc">Every protocol action — voting, publishing, court responses — is signed locally by the journalist's PressKey wallet. Keys never leave the device. Replay attacks are structurally impossible.</p>
+  </div>
+  <div className="pc-cap">
+    <span className="pc-cap-icon">💸</span>
+    <div className="pc-cap-title">Deterministic Fee Routing</div>
+    <p className="pc-cap-desc">Every PRESS fee is split on-chain at execution. Validators, media validators, vault operators, integrity treasury, burn pool — deterministic fractions, no discretion, full audit trail.</p>
+  </div>
+  <div className="pc-cap">
+    <span className="pc-cap-icon">🌐</span>
+    <div className="pc-cap-title">Bridge API Middleware</div>
+    <p className="pc-cap-desc">REST-based middleware normalizes chain data for outlet and dApp integrations. Capsule submission, voting, role management, court cases, and distribution — all behind clean, versioned endpoints.</p>
+  </div>
+  <div className="pc-cap">
+    <span className="pc-cap-icon">🏛️</span>
+    <div className="pc-cap-title">Rights Marketplace</div>
+    <p className="pc-cap-desc">Canonical Capsules are licensable. Revenue splits to contributors on-chain by basis-point share. On-chain escrow. Instant settlement. No platform takes a cut.</p>
+  </div>
+  <div className="pc-cap">
+    <span className="pc-cap-icon">🗳️</span>
+    <div className="pc-cap-title">Bonded Role System</div>
+    <p className="pc-cap-desc">Citizens, Contributors, Reporters, Verified Authors, and Media Validators hold bonded roles. Economic stakes back voting weight. Bond stability compounds over time.</p>
+  </div>
+</div>
 
----
+## Developer Quick Start
 
-## Protocol at a Glance
+```bash
+# Connect to testnet
+RPC:      https://rpc.presschain.io
+Chain ID: 77117002
+Token:    PRESS
 
-| Surface | URL | Purpose |
-|---|---|---|
-| Portal | [portal.presschain.io](https://portal.presschain.io) | Outlet control plane, publishing, analytics |
-| PressKey | [key.presschain.io](https://key.presschain.io) | Identity wallet and session authority |
-| Bridge API | [bridge.presschain.io](https://bridge.presschain.io) | Primary developer integration surface |
-| Court | [court.presschain.io](https://court.presschain.io) | Dispute resolution engine |
-| Explorer | [explorer.presschain.io](https://explorer.presschain.io) | Capsule ledger, votes, integrity labels |
-| Proposals | [proposals.presschain.io](https://proposals.presschain.io) | On-chain governance |
-| Rights | [rights.presschain.io](https://rights.presschain.io) | Rights licensing marketplace |
-| Status | [status.presschain.io](https://status.presschain.io) | Live network health |
-| Faucet | [faucet.presschain.io](https://faucet.presschain.io) | Testnet PRESS tokens |
+# Get testnet PRESS
+curl https://faucet.presschain.io/api/drip \
+  -X POST -H "Content-Type: application/json" \
+  -d '{"address": "0xYOUR_ADDRESS"}'
 
----
+# Bridge health
+curl https://bridge.presschain.io/health
 
-## Network
+# Read a Capsule
+curl https://bridge.presschain.io/capsules/1
+```
 
-<CardGroup cols={3}>
-  <Card title="Testnet" icon="flask">
-    **Chain ID** `77117002`  
-    **RPC** `rpc.presschain.io`  
-    **Token** tPRESS (free from faucet)
-  </Card>
-  <Card title="Mainnet" icon="link">
-    **Chain ID** `77117001`  
-    **Token** PRESS  
-    **Supply** 100M fixed, no inflation
-  </Card>
-  <Card title="Bridge API" icon="webhook">
-    `bridge.presschain.io`  
-    **Auth** Bearer token  
-    **Docs** [→ reference](/developer/integrations/bridge-api)
-  </Card>
-</CardGroup>
+```typescript
+import { JsonRpcProvider, Contract } from "ethers";
 
----
+const provider = new JsonRpcProvider("https://rpc.presschain.io");
+// Chain ID: 77117002n
 
-<Info>
-**Investors & Auditors** — The Bridge API exposes a live summary at `https://bridge.presschain.io/meta/contracts-summary`. Live telemetry including validator count, acceptance rates, burn pool size, and court backlog is at `status.presschain.io`.
-</Info>
+// Read capsule acceptance state
+const acceptance = new Contract(
+  "0x63D0c0b51a3856a539b36a909517a18BddDb4a32",
+  ["function isVotingOpen(uint256) view returns (bool)",
+   "function getVoteState(uint256) view returns (uint256,uint256,uint256,uint256,uint256,bool,bool)"],
+  provider
+);
+const open = await acceptance.isVotingOpen(1n);
+```
+
+<div className="pc-cta-banner">
+  <div>
+    <p className="pc-cta-text">Ready to build on PressChain?</p>
+    <p className="pc-cta-sub">Connect to testnet in minutes. Full contract registry, Bridge API, and PressKey integration docs ready.</p>
+  </div>
+  <div style={{display:"flex",gap:"12px",flexWrap:"wrap"}}>
+    <a href="/developer/quickstart" className="pc-btn-primary">Quickstart Guide</a>
+    <a href="/developer/chain/contracts" className="pc-btn-secondary">Contract Registry</a>
+  </div>
+</div>

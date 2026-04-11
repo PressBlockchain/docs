@@ -1,6 +1,6 @@
 ---
 title: Bridge API
-description: Full route reference for the PressChain Bridge API — the primary integration surface for all outlet and dApp development.
+description: Full route reference for the PressChain Bridge API - the primary integration surface for all outlet and dApp development.
 icon: webhook
 ---
 
@@ -32,12 +32,12 @@ GET /network/status
 # List capsules (paginated)
 GET /capsules?page=1&limit=20&outlet=presshash&status=accepted
 
-# Full capsule — Rust API shape (evidence, contributors, revision, policy)
+# Full capsule - Rust API shape (evidence, contributors, revision, policy)
 GET /capsules/:id
 
 # Lightweight vote state summary
 GET /capsules/:id
-# (same route — check capsule.status, weightedYes, weightedNo, participation)
+# (same route - check capsule.status, weightedYes, weightedNo, participation)
 
 # Capsule history / revision lineage
 GET /capsules/:id/history
@@ -103,7 +103,7 @@ POST /capsules/:id/reject
       "evidenceType": "archived_page",
       "mimeType": "text/html",
       "isPrimary": true,
-      "label": "Council session archive — Jan 9 2024"
+      "label": "Council session archive - Jan 9 2024"
     }
   ],
   "status": "draft"

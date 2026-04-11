@@ -6,20 +6,20 @@ icon: server
 
 ## Server Topology
 
-PressChain runs on two production servers with strict service separation. Nothing protocol-critical and nothing outlet-facing share a server with each other by accident — the split is deliberate.
+PressChain runs on two production servers with strict service separation. Nothing protocol-critical and nothing outlet-facing share a server with each other by accident - the split is deliberate.
 
 <CardGroup cols={2}>
-  <Card title="38.83.53.142 — Chain Host" icon="cube" color="#009BF9">
+  <Card title="38.83.53.142 - Chain Host" icon="cube" color="#009BF9">
     EVM node, indexer, bridge middleware, Postgres, Redis, MinIO. The static marketing site (Vite/cPanel) also deploys here.
   </Card>
-  <Card title="38.83.53.58 — App Host" icon="display" color="#002A43">
+  <Card title="38.83.53.58 - App Host" icon="display" color="#002A43">
     All Next.js dApps via systemd. Portal, outlet, court, proposals, ads, status, docs, faucet. Apache proxy front-end.
   </Card>
 </CardGroup>
 
 ---
 
-## Chain Host (38.83.53.142) — Service Map
+## Chain Host (38.83.53.142) - Service Map
 
 ```
 38.83.53.142
@@ -56,7 +56,7 @@ PressChain runs on two production servers with strict service separation. Nothin
 
 ---
 
-## App Host (38.83.53.58) — Service Map
+## App Host (38.83.53.58) - Service Map
 
 ```
 38.83.53.58
@@ -80,7 +80,7 @@ PressChain runs on two production servers with strict service separation. Nothin
 ## Security Model
 
 <Warning>
-Only ports **80** and **443** are publicly exposed. Everything else is internal. P2P ports (40303, 40304) are also open but only for chain consensus — not for application traffic.
+Only ports **80** and **443** are publicly exposed. Everything else is internal. P2P ports (40303, 40304) are also open but only for chain consensus - not for application traffic.
 </Warning>
 
 | Layer | Rule |
@@ -89,11 +89,11 @@ Only ports **80** and **443** are publicly exposed. Everything else is internal.
 | Application layer | WordPress and outlet apps never touch RPC |
 | API Gateway | Rate limiting, nonce verification, replay protection, session checks |
 | PressChain ↔ PressHash | Isolated processes with resource caps |
-| TLS | All public endpoints — Let's Encrypt, auto-renewal |
+| TLS | All public endpoints - Let's Encrypt, auto-renewal |
 
 ```bash
 # UFW rules
-ufw allow 22/tcp    # SSH — restrict to known IPs in production
+ufw allow 22/tcp    # SSH - restrict to known IPs in production
 ufw allow 80/tcp    # HTTP (→ HTTPS redirect)
 ufw allow 443/tcp   # HTTPS
 ufw allow 40303     # Mainnet P2P
@@ -180,7 +180,7 @@ done
 The app host uses cPanel-managed Apache for SSL termination and reverse proxy. The key quirk:
 
 ```bash
-# Always use \cp (backslash) — bypasses interactive cp alias
+# Always use \cp (backslash) - bypasses interactive cp alias
 \cp -rf dist/. /home/pcpressroot/public_html/
 
 # Fix ownership after any copy as root
@@ -190,7 +190,7 @@ chown -R pcpressroot:pcpressroot /home/pcpressroot/public_html/
 /scripts/rebuildhttpdconf && /scripts/restartsrv_httpd
 ```
 
-Do not use `service apache2` or `systemctl apache2` directly on cPanel servers — use the cPanel scripts only.
+Do not use `service apache2` or `systemctl apache2` directly on cPanel servers - use the cPanel scripts only.
 
 ---
 

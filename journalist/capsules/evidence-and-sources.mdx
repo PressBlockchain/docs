@@ -1,14 +1,14 @@
 ---
 title: Evidence & Sources
-description: How to protect your journalism with committed evidence — what counts, how to archive it, and why hashing matters.
+description: How to protect your journalism with committed evidence - what counts, how to archive it, and why hashing matters.
 icon: file-shield
 ---
 
 ## Why Evidence Is Different on PressChain
 
-When you publish on a normal website, your sources are whatever you wrote. Someone disputes your story — you might have the documents, you might not. The document might have disappeared from the government website. Your archived screenshot lives in a folder on your laptop.
+When you publish on a normal website, your sources are whatever you wrote. Someone disputes your story - you might have the documents, you might not. The document might have disappeared from the government website. Your archived screenshot lives in a folder on your laptop.
 
-On PressChain, your evidence is **locked in at the moment you publish.** Every document, archive, transcript, and photo is hashed with SHA-256 and that hash is stored permanently on-chain. Anyone — a reader, a juror, an editor — can verify your evidence is unchanged.
+On PressChain, your evidence is **locked in at the moment you publish.** Every document, archive, transcript, and photo is hashed with SHA-256 and that hash is stored permanently on-chain. Anyone - a reader, a juror, an editor - can verify your evidence is unchanged.
 
 If someone claims your source doesn't exist, you can prove it did. If they claim you misrepresented a document, the original is permanently verifiable.
 
@@ -20,18 +20,18 @@ Marcus Webb is documenting illegal chemical dumping near a protected wetland. Be
 
 | Evidence | Type | Notes |
 |---|---|---|
-| City permit application (PDF) | `document` | Primary — proves permits were granted despite warnings |
-| Government inspection report | `document` | Primary — Category B violations on record |
+| City permit application (PDF) | `document` | Primary - proves permits were granted despite warnings |
+| Government inspection report | `document` | Primary - Category B violations on record |
 | Archive of the permit page | `archived_page` | Proves the page existed before it was taken down |
-| His own site photos | `media` | Supporting — shows physical evidence |
-| Source interview transcript | `transcript` | Supporting — protects source while preserving record |
+| His own site photos | `media` | Supporting - shows physical evidence |
+| Source interview transcript | `transcript` | Supporting - protects source while preserving record |
 
 When Marcus submits his Capsule, each of these is:
 1. Uploaded to the Vault Network
 2. Hashed with SHA-256
 3. Hash committed to PressChain permanently
 
-Six months later, the city's legal team claims Marcus fabricated the inspection report. Marcus opens the Capsule on the Explorer, pulls the evidence hash, downloads the file from the Vault, hashes it — they match. The report existed at the time he published. The claim is disproven.
+Six months later, the city's legal team claims Marcus fabricated the inspection report. Marcus opens the Capsule on the Explorer, pulls the evidence hash, downloads the file from the Vault, hashes it - they match. The report existed at the time he published. The claim is disproven.
 
 ---
 
@@ -41,7 +41,7 @@ Six months later, the city's legal team claims Marcus fabricated the inspection 
   <Accordion title="Archived Page" icon="archive">
     A web page saved at the exact moment of your reporting. Use Archive.org's Wayback Machine or the Save Now tool to create a permanent snapshot of any URL.
 
-    **When to use:** Government pages, company websites, social media posts — anything that might be edited or deleted.
+    **When to use:** Government pages, company websites, social media posts - anything that might be edited or deleted.
 
     **Best practice:** Archive source pages the moment you access them for reporting, not after you publish. Pages can disappear quickly.
   </Accordion>
@@ -57,7 +57,7 @@ Six months later, the city's legal team claims Marcus fabricated the inspection 
 
     **When to use:** When you have on-record sources whose words directly support your claims.
 
-    **Protecting sources:** You can redact identifying information before uploading. The redacted version is what gets hashed — what you upload is what's committed. Never upload raw transcripts that would identify a confidential source.
+    **Protecting sources:** You can redact identifying information before uploading. The redacted version is what gets hashed - what you upload is what's committed. Never upload raw transcripts that would identify a confidential source.
   </Accordion>
   <Accordion title="Media" icon="photo-film">
     Photos, video, audio recordings.
@@ -81,8 +81,8 @@ Six months later, the city's legal team claims Marcus fabricated the inspection 
 
 Every evidence item is marked as **Primary** or **Supporting**:
 
-- **Primary** — the core evidence that directly proves your main claims. You should always have at least one primary item.
-- **Supporting** — context, corroboration, background. Strengthens the case but isn't the central proof.
+- **Primary** - the core evidence that directly proves your main claims. You should always have at least one primary item.
+- **Supporting** - context, corroboration, background. Strengthens the case but isn't the central proof.
 
 Jurors in court cases pay closest attention to primary evidence. Be deliberate about what you mark as primary.
 
@@ -110,12 +110,12 @@ You upload: city-permit-report.pdf
 PressChain:
 1. Sends file to Vault Network (secure distributed storage)
 2. Computes SHA-256 hash: 0x9f86d081...
-3. Stores hash on-chain permanently (not the file — the proof)
+3. Stores hash on-chain permanently (not the file - the proof)
 
 Vault Network:
 - Stores file with redundancy
 - Periodically proves availability to the protocol
-- Vault operators are bonded — failures carry financial penalties
+- Vault operators are bonded - failures carry financial penalties
 
 Anyone later:
 1. Downloads file from Vault: city-permit-report.pdf
@@ -129,12 +129,12 @@ Anyone later:
 
 PressChain does not require you to expose source identities. You have options:
 
-- **Redact before uploading** — remove identifying information from transcripts
-- **Upload summaries** — describe what a source told you without the raw transcript
-- **Omit source documents** — you don't have to upload every piece of evidence. Not having evidence isn't the same as fabrication.
-- **Use journalist device signatures** — optional metadata proving your device was present, without revealing who you talked to
+- **Redact before uploading** - remove identifying information from transcripts
+- **Upload summaries** - describe what a source told you without the raw transcript
+- **Omit source documents** - you don't have to upload every piece of evidence. Not having evidence isn't the same as fabrication.
+- **Use journalist device signatures** - optional metadata proving your device was present, without revealing who you talked to
 
-When the Court reviews evidence, jurors see what you uploaded — not your notes or communications you didn't attach. Your editorial judgment about what to include is respected.
+When the Court reviews evidence, jurors see what you uploaded - not your notes or communications you didn't attach. Your editorial judgment about what to include is respected.
 
 ---
 

@@ -6,16 +6,16 @@ icon: sitemap
 
 ## The Core Constraint
 
-Every architectural decision flows from one principle: **the protocol must not appear — or actually be — controlled by any company.** Domain separation, service isolation, and the API gateway pattern all exist to preserve decentralization posture as the network matures.
+Every architectural decision flows from one principle: **the protocol must not appear - or actually be - controlled by any company.** Domain separation, service isolation, and the API gateway pattern all exist to preserve decentralization posture as the network matures.
 
 ## Domain Separation
 
 <CardGroup cols={2}>
-  <Card title="presschain.io — Protocol Namespace" icon="globe" color="#009BF9">
+  <Card title="presschain.io - Protocol Namespace" icon="globe" color="#009BF9">
     Everything protocol-critical: RPC, canonical dApps, court, explorer, docs, bridge. Neutral, permanent, canonical. Over time, RPC load-balances across community operators without changing URLs.
   </Card>
-  <Card title="presslabs.io — Steward Org" icon="building" color="#002A43">
-    Legal, disclosures, grants, validator node sales, careers. PressLabs does not host RPC or canonical dApps — this keeps the chain from looking corporate-controlled.
+  <Card title="presslabs.io - Steward Org" icon="building" color="#002A43">
+    Legal, disclosures, grants, validator node sales, careers. PressLabs does not host RPC or canonical dApps - this keeps the chain from looking corporate-controlled.
   </Card>
 </CardGroup>
 
@@ -44,7 +44,7 @@ User Action (PressKey signs nonce locally)
 ```
 
 <Warning>
-WordPress and outlet apps sit at the very top. They see a controlled web API and never touch RPC directly. This is a hard security boundary — not a best practice, a rule.
+WordPress and outlet apps sit at the very top. They see a controlled web API and never touch RPC directly. This is a hard security boundary - not a best practice, a rule.
 </Warning>
 
 ## Service Components
@@ -60,7 +60,7 @@ WordPress and outlet apps sit at the very top. They see a controlled web API and
     Node.js middleware at `bridge.presschain.io`. Requires Bearer auth for all write routes. Exposes normalized REST endpoints for outlet workflows, capsule submission, voting, and metadata. The stable integration surface for all non-validator development.
   </Accordion>
   <Accordion title="Indexer" icon="database">
-    Indexes chain events into PostgreSQL. Powers fast queries for capsule state, vote history, court cases, and distribution events. The Bridge reads from here for all normalized data — not directly from RPC.
+    Indexes chain events into PostgreSQL. Powers fast queries for capsule state, vote history, court cases, and distribution events. The Bridge reads from here for all normalized data - not directly from RPC.
   </Accordion>
   <Accordion title="BlockScout Explorer" icon="magnifying-glass">
     Customized so the first-class object is the Capsule, not the transaction. Shows acceptance ratios, vote breakdowns, integrity labels, and revision lineage on each Capsule page.
@@ -73,7 +73,7 @@ WordPress and outlet apps sit at the very top. They see a controlled web API and
   </Accordion>
 </AccordionGroup>
 
-## Protocol Namespace — All Surfaces
+## Protocol Namespace - All Surfaces
 
 ```
 presschain.io namespace
@@ -101,6 +101,6 @@ presschain.io namespace
 | **Now** | Single-operator RPC, PoA consensus, community validators being onboarded |
 | **Phase 2** | Load-balance RPC across community operators, same URL |
 | **Phase 3** | Multi-validator consensus, Council authority narrows |
-| **Phase 4** | Protocol autonomous — PressLabs is one participant among many |
+| **Phase 4** | Protocol autonomous - PressLabs is one participant among many |
 
 The URL structure is designed so phase transitions happen under the hood without breaking integrations.

@@ -61,7 +61,7 @@ faucet     → apps/faucet     → 3017 → presschain-next@faucet
 cd /home/press/presschain-site
 npm run build
 
-# Deploy — MUST use backslash prefix
+# Deploy - MUST use backslash prefix
 \cp -rf dist/. /home/pcpressroot/public_html/
 
 # Fix ownership
@@ -75,7 +75,7 @@ curl -I https://presschain.io
 ```
 
 <Warning>
-Always use `\cp` (backslash prefix) — the `cp` alias on cPanel servers is interactive and will stall automated deploys.
+Always use `\cp` (backslash prefix) - the `cp` alias on cPanel servers is interactive and will stall automated deploys.
 </Warning>
 
 ## Rollback Procedure
@@ -91,7 +91,7 @@ cp -av /home/pcpressroot/public_html \
 chown -R pcpressroot:pcpressroot /home/pcpressroot/public_html/
 /scripts/rebuildhttpdconf && /scripts/restartsrv_httpd
 
-# Rollback Next.js app — checkout previous commit and rebuild
+# Rollback Next.js app - checkout previous commit and rebuild
 cd /home/press/PressChain
 git log --oneline -5       # find previous commit
 git checkout <commit-hash> -- apps/portal

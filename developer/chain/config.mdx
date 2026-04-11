@@ -58,7 +58,7 @@ await window.ethereum.request({
 ## Next.js Environment Variables
 
 ```bash
-# .env.local — matches production env schema
+# .env.local - matches production env schema
 NEXT_PUBLIC_CHAIN_NAME=PressChain Testnet
 NEXT_PUBLIC_CHAIN_ID=77117002
 NEXT_PUBLIC_MAINNET_CHAIN_ID=77117001
@@ -92,13 +92,13 @@ NEXT_PUBLIC_ENABLE_ROLE_MANAGEMENT=true
 ```typescript
 import { JsonRpcProvider, WebSocketProvider } from "ethers";
 
-// HTTP — standard queries + tx submission
+// HTTP - standard queries + tx submission
 const provider = new JsonRpcProvider("https://rpc.presschain.io");
 
-// Archive — historical state, all block history
+// Archive - historical state, all block history
 const archive = new JsonRpcProvider("https://archive.rpc.presschain.io");
 
-// WebSocket — real-time blocks and events
+// WebSocket - real-time blocks and events
 const ws = new WebSocketProvider("wss://ws.presschain.io");
 
 // Verify

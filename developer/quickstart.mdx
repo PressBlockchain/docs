@@ -16,7 +16,7 @@ By the end of this guide you'll have:
 
 ---
 
-## Step 1 — Install Dependencies
+## Step 1 - Install Dependencies
 
 ```bash
 mkdir presschain-quickstart && cd presschain-quickstart
@@ -35,7 +35,7 @@ BRIDGE_URL=https://bridge.presschain.io
 
 ---
 
-## Step 2 — Connect and Verify Chain
+## Step 2 - Connect and Verify Chain
 
 ```typescript
 // index.ts
@@ -65,9 +65,9 @@ npx tsx index.ts
 
 ---
 
-## Step 3 — Read a Live Capsule from Bridge
+## Step 3 - Read a Live Capsule from Bridge
 
-The Bridge API is the fastest way to read normalized Capsule data — no ABI decoding required.
+The Bridge API is the fastest way to read normalized Capsule data - no ABI decoding required.
 
 ```typescript
 // read-capsule.ts
@@ -92,7 +92,7 @@ async function getCapsule(capsuleId: string) {
   console.log("Status:      ", capsule.status);       // accepted / pending / rejected
   console.log("Yes votes:   ", capsule.weightedYes);
   console.log("No votes:    ", capsule.weightedNo);
-  console.log("Accepted at: ", capsule.acceptedAt ? new Date(Number(capsule.acceptedAt) * 1000).toISOString() : "—");
+  console.log("Accepted at: ", capsule.acceptedAt ? new Date(Number(capsule.acceptedAt) * 1000).toISOString() : "-");
   console.log("Evidence:    ", evidence?.length ?? 0, "items");
   console.log("Contributors:", contributors?.map((c: any) => c.displayName).join(", "));
 }
@@ -102,7 +102,7 @@ getCapsule("1");
 
 ---
 
-## Step 4 — Query Bond State from Contract
+## Step 4 - Query Bond State from Contract
 
 ```typescript
 // check-bond.ts
@@ -146,7 +146,7 @@ checkBond("0xYOUR_WALLET_ADDRESS");
 
 ---
 
-## Step 5 — List Recent Capsules via Bridge
+## Step 5 - List Recent Capsules via Bridge
 
 ```typescript
 // list-capsules.ts
@@ -161,7 +161,7 @@ async function listRecent(outletSlug?: string, limit = 5) {
 
   console.log(`\nRecent capsules (${capsules?.length ?? 0}):\n`);
   for (const c of capsules ?? []) {
-    console.log(`#${c.id}  [${c.status.padEnd(8)}]  ${c.outletSlug}  —  ${c.title ?? "(no title)"}`);
+    console.log(`#${c.id}  [${c.status.padEnd(8)}]  ${c.outletSlug}  -  ${c.title ?? "(no title)"}`);
   }
 }
 
@@ -171,12 +171,12 @@ listRecent(); // all outlets
 
 ---
 
-## Step 6 — Authenticated Bridge Request
+## Step 6 - Authenticated Bridge Request
 
 Write routes require a Bearer token from a PressKey session:
 
 ```typescript
-// submit-check.ts — verify your token works
+// submit-check.ts - verify your token works
 import "dotenv/config";
 
 async function checkAuth() {
@@ -187,7 +187,7 @@ async function checkAuth() {
   });
 
   if (res.status === 401) {
-    console.error("Token invalid or expired — re-auth in PressKey");
+    console.error("Token invalid or expired - re-auth in PressKey");
     return;
   }
 

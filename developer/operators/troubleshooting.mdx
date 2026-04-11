@@ -67,7 +67,7 @@ cat /etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/portal.presschain.io/proxy.
 ## Build Fails / Stale .next Cache
 
 ```bash
-# Full rebuild — clears Next.js cache
+# Full rebuild - clears Next.js cache
 cd /home/press/PressChain/apps/portal
 rm -rf .next
 pnpm build
@@ -80,10 +80,10 @@ journalctl -u presschain-next@portal -n 30 --no-pager
 ## \cp Deploy Issue
 
 ```bash
-# ALWAYS use backslash prefix — bypasses interactive alias
+# ALWAYS use backslash prefix - bypasses interactive alias
 \cp -rf dist/. /home/pcpressroot/public_html/
 
-# Wrong — will prompt for each file
+# Wrong - will prompt for each file
 cp -rf dist/. /home/pcpressroot/public_html/
 
 # Verify alias issue
@@ -101,7 +101,7 @@ curl -s https://bridge.presschain.io/wallet/0xYOUR_ADDRESS/roles \
   -H "Authorization: Bearer YOUR_TOKEN"
 # 401 → token expired, re-auth in PressKey
 
-# Token expiry pattern — always get fresh token per action
+# Token expiry pattern - always get fresh token per action
 # Don't cache sessionToken across multiple requests
 ```
 
@@ -157,7 +157,7 @@ ls -lah /home/press/PressChain/apps/portal
 ## Block Production Stalled
 
 ```bash
-# Check block number (run twice 10s apart — should increment)
+# Check block number (run twice 10s apart - should increment)
 for i in 1 2; do
   curl -s https://rpc.presschain.io \
     -X POST -H "Content-Type: application/json" \

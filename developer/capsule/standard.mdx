@@ -1,6 +1,6 @@
 ---
 title: Capsule Standard
-description: The atomic publishing object — full JSON schema, field definitions, status values, and integrity labels.
+description: The atomic publishing object - full JSON schema, field definitions, status values, and integrity labels.
 icon: box
 ---
 
@@ -93,7 +93,7 @@ The live payload shape from `GET /capsules/:id`:
       "evidenceId": "1",
       "evidenceType": "archived_page",
       "isPrimary": true,
-      "label": "Council session archive — Jan 2 2024",
+      "label": "Council session archive - Jan 2 2024",
       "mimeType": "text/html",
       "submittedBy": "0xJournalistWalletAddress",
       "uri": "https://archive.org/web/20240102/https://citycouncil.gov/session-jan-2"
@@ -106,7 +106,7 @@ The live payload shape from `GET /capsules/:id`:
       "evidenceId": "2",
       "evidenceType": "transcript",
       "isPrimary": false,
-      "label": "Meeting transcript — Infrastructure budget discussion",
+      "label": "Meeting transcript - Infrastructure budget discussion",
       "mimeType": "text/plain",
       "submittedBy": "0xJournalistWalletAddress",
       "uri": "https://vault.presschain.io/evidence/abc123"
@@ -180,10 +180,10 @@ The live payload shape from `GET /capsules/:id`:
 | `weightedYes` | string | Computed weighted yes score |
 | `weightedNo` | string | Computed weighted no score |
 | `weightedParticipation` | string | Total weighted participation |
-| `opensAt` | string | Unix timestamp — voting window open |
-| `closesAt` | string | Unix timestamp — voting window close |
-| `acceptedAt` | string | Unix timestamp — acceptance confirmed |
-| `finalizedAt` | string | Unix timestamp — on-chain finalization |
+| `opensAt` | string | Unix timestamp - voting window open |
+| `closesAt` | string | Unix timestamp - voting window close |
+| `acceptedAt` | string | Unix timestamp - acceptance confirmed |
+| `finalizedAt` | string | Unix timestamp - on-chain finalization |
 | `finalizedArticleId` | string | Article ID post-finalization |
 | `rootCapsuleId` | string\|null | Original capsule (for revisions) |
 | `parentCapsuleId` | string\|null | Direct parent capsule |
@@ -234,7 +234,7 @@ The live payload shape from `GET /capsules/:id`:
 | Status | Meaning |
 |---|---|
 | `pending` | Voting window open |
-| `accepted` | Passed acceptance — canonical |
+| `accepted` | Passed acceptance - canonical |
 | `rejected` | Failed quorum or approval threshold |
 | `finalized` | On-chain record written, distribution active |
 | `superseded` | Replaced by a newer revision Capsule |
@@ -243,7 +243,7 @@ The live payload shape from `GET /capsules/:id`:
 
 | Label | Applied By |
 |---|---|
-| `clean` | Default — no disputes |
+| `clean` | Default - no disputes |
 | `verified` | Court confirmed accuracy |
 | `contested` | Active dispute in progress |
 | `unresolved` | Court concluded, no clear verdict |

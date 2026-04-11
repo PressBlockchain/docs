@@ -1,21 +1,27 @@
 ---
 title: Welcome, Journalist
-description: What PressChain means for your work — and why it's different from anything you've used before.
+description: What PressChain means for your work, and why it is different from anything you have used before.
 icon: newspaper
 ---
 
-<div style={{background: "linear-gradient(135deg, #F3FAFF, #EEF7FF)", borderRadius: "16px", padding: "36px", marginBottom: "32px", border: "1px solid rgba(0,155,249,0.15)"}}>
-  <div style={{fontFamily: "'DM Serif Display', serif", fontSize: "1.8rem", color: "#002A43", marginBottom: "12px", lineHeight: 1.2}}>
-    Your journalism, permanently on record.
+<div className="pc-hero">
+  <div className="pc-badge">
+    <div className="pc-badge-dot" />
+    No Blockchain Knowledge Required
   </div>
-  <p style={{fontFamily: "'Nunito', sans-serif", color: "#004F84", fontSize: "1.05rem", lineHeight: 1.7, margin: 0, fontWeight: 500}}>
-    PressChain is a blockchain protocol that makes your published work permanently verifiable, publicly validated, and economically yours. You don't need to know anything about blockchain to use it. You just need to report.
+  <h1 className="pc-hero-title">Your journalism,<br /><em>permanently on record.</em></h1>
+  <p className="pc-hero-sub">
+    PressChain is a blockchain protocol that makes your published work permanently verifiable, publicly validated, and economically yours. You keep your existing workflow. You just need to report.
   </p>
+  <div className="pc-hero-ctas">
+    <a href="/journalist/presskey-setup" className="pc-btn-primary">Set Up PressKey</a>
+    <a href="/journalist/capsules/what-is-a-capsule" className="pc-btn-secondary">What is a Capsule?</a>
+  </div>
 </div>
 
 ## What This Means in Practice
 
-Meet **Maya Chen**, an investigative reporter at a regional newspaper. She's been covering city hall corruption for three months. She has documents, sources, and a story that officials are already calling false.
+Meet **Maya Chen**, an investigative reporter at a regional newspaper. She has been covering city hall corruption for three months. She has documents, sources, and a story that officials are already calling false.
 
 Before PressChain, when her article was published:
 - Officials could pressure her editor
@@ -25,7 +31,7 @@ Before PressChain, when her article was published:
 
 After PressChain:
 - Her article is submitted to the public for validation
-- Her sources are hash-committed — tampering is provable
+- Her sources are hash-committed at publication - tampering is provable
 - If officials dispute her story, it goes through a formal court process with evidence and jurors
 - Any newspaper that republishes pays her directly, on-chain, instantly
 
@@ -37,37 +43,35 @@ After PressChain:
 
 <AccordionGroup>
   <Accordion title="Your story can never be silently deleted" icon="ban">
-    Once your article passes public acceptance on PressChain, it is permanent. No editor, outlet owner, advertiser, or court order can erase it. Corrections create a new version that points back to the original — both stay visible forever.
+    Once your article passes public acceptance on PressChain, it is permanent. No editor, outlet owner, advertiser, or court order can erase it. Corrections create a new version that points back to the original. Both stay visible forever.
 
     *This matters most when powerful people want your story gone.*
   </Accordion>
   <Accordion title="The public validates your journalism" icon="users">
-    Your article goes through a 72-hour public vote. People with verified identities and economic stakes — journalists, contributors, readers — vote on whether your work meets the standard for canonical journalism.
+    Your article goes through a 72-hour public vote. People with verified identities and economic stakes vote on whether your work meets the standard for canonical journalism.
 
-    It's not a popularity contest. It's a structured public process. And you can't buy your way through it.
+    It is not a popularity contest. It is a structured public process. You cannot buy your way through it.
   </Accordion>
   <Accordion title="Your evidence is locked in at publication" icon="shield-check">
-    When you submit your story, you attach your sources — archived web pages, documents, transcripts. These are hashed and permanently committed. If someone later claims your source doesn't exist, you can prove it did — at the exact moment you published.
-
-    *Imagine having cryptographic proof that you had the document.*
+    When you submit your story, you attach your sources - archived web pages, documents, transcripts. These are hashed and permanently committed. If someone later claims your source does not exist, you can prove it did at the exact moment you published.
   </Accordion>
   <Accordion title="Disputes go to a formal process, not a delete button" icon="gavel">
-    If someone challenges your reporting, it goes to the PressChain Court — a structured system with specific claims, evidence windows, and randomly-selected jurors. The outcome is a permanent integrity label. Your article isn't simply removed because someone complained.
+    If someone challenges your reporting, it goes to the PressChain Court - a structured system with specific claims, evidence windows, and randomly-selected jurors. The outcome is a permanent integrity label. Your article is never simply removed because someone complained.
   </Accordion>
   <Accordion title="You earn directly from your work" icon="circle-dollar-sign">
-    Accepted articles can be licensed commercially through the Rights Marketplace. When another outlet buys the rights to republish your story, the revenue is split between you and your editor automatically — on-chain, instantly, without a publisher taking a cut.
+    Accepted articles can be licensed commercially through the Rights Marketplace. When another outlet buys the rights to republish your story, the revenue is split between you and your editor automatically, on-chain, instantly, without a publisher taking a cut.
   </Accordion>
 </AccordionGroup>
 
 ---
 
-## What You Don't Have to Change
+## What You Do Not Have to Change
 
 <Info>
-You keep your existing workflow. Your CMS. Your WordPress. Your editorial process. PressChain adds a protocol layer on top — it doesn't replace how you write or publish.
+You keep your existing workflow. Your CMS. Your WordPress. Your editorial process. PressChain adds a protocol layer on top - it does not replace how you write or publish.
 </Info>
 
-Your article still goes live on your website the moment you publish. PressChain runs the canonicalization process in parallel. If your article passes acceptance, it gets a badge and enters the distribution network. If it doesn't, your article still exists on your site — just without the canonical record.
+Your article still goes live on your website the moment you publish. PressChain runs the canonicalization process in parallel. If your article passes acceptance, it gets a badge and enters the distribution network. If it does not, your article still exists on your site - just without the canonical record.
 
 ---
 
@@ -81,10 +85,10 @@ Your article still goes live on your website the moment you publish. PressChain 
     The structured version of your article. Understand what gets submitted and why.
   </Card>
   <Card title="How Voting Works" icon="check-to-slot" href="/journalist/voting/how-voting-works">
-    Who votes, how it's weighted, and what happens at the end of 72 hours.
+    Who votes, how it is weighted, and what happens at the end of 72 hours.
   </Card>
   <Card title="Register Your Outlet" icon="building-columns" href="/journalist/outlets/register-your-newsroom">
-    For editors and outlet owners — get your newsroom on the protocol.
+    For editors and outlet owners - get your newsroom on the protocol.
   </Card>
 </CardGroup>
 
@@ -96,9 +100,9 @@ Your article still goes live on your website the moment you publish. PressChain 
 |---|---|
 | **Capsule** | Your article, structured as a protocol object with evidence, contributors, and history |
 | **Canonical** | Your article passed public acceptance and is permanently on the record |
-| **PressKey** | Your identity wallet — signs every action you take on PressChain |
+| **PressKey** | Your identity wallet - signs every action you take on PressChain |
 | **Bond** | PRESS tokens you lock as economic commitment to your role |
 | **Acceptance** | The 72-hour public vote process that makes a Capsule canonical |
-| **Court** | The on-chain dispute system — resolves challenges through process, not deletion |
-| **PRESS** | The native token — used for fees, bonds, and governance |
+| **Court** | The on-chain dispute system - resolves challenges through process, not deletion |
+| **PRESS** | The native token - used for fees, bonds, and governance |
 | **Integrity Label** | The permanent public record of how your article fared over time |

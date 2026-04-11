@@ -6,7 +6,7 @@ icon: brackets-curly
 
 ## Fetch ABIs at Runtime
 
-Always fetch ABIs from Bridge — they stay current with contract redeployments:
+Always fetch ABIs from Bridge - they stay current with contract redeployments:
 
 ```typescript
 async function getABI(contractName: string) {
@@ -28,7 +28,7 @@ const [registryABI, acceptanceABI, bondABI, membershipABI] = await Promise.all([
 ```
 
 <Tip>
-In production, cache fetched ABIs during your build step — don't fetch on every page load. ABIs only change on contract redeployments, which are announced via `status.presschain.io`.
+In production, cache fetched ABIs during your build step - don't fetch on every page load. ABIs only change on contract redeployments, which are announced via `status.presschain.io`.
 </Tip>
 
 ---
@@ -38,7 +38,7 @@ In production, cache fetched ABIs during your build step — don't fetch on ever
 Implement contracts in this order. Higher priority = called more frequently in typical outlet and journalist workflows.
 
 <Steps>
-  <Step title="ArticleRegistry — Submit and query Capsules">
+  <Step title="ArticleRegistry - Submit and query Capsules">
     Every publishing integration starts here.
 
     ```bash
@@ -60,7 +60,7 @@ Implement contracts in this order. Higher priority = called more frequently in t
     ```
   </Step>
 
-  <Step title="CapsuleAcceptance — Voting engine">
+  <Step title="CapsuleAcceptance - Voting engine">
     Cast votes, query vote state, trigger finalization.
 
     ```bash
@@ -85,7 +85,7 @@ Implement contracts in this order. Higher priority = called more frequently in t
     ```
   </Step>
 
-  <Step title="OutletMembership — Outlet onboarding and bond state">
+  <Step title="OutletMembership - Outlet onboarding and bond state">
     Required for any outlet-level operation.
 
     ```bash
@@ -104,13 +104,13 @@ Implement contracts in this order. Higher priority = called more frequently in t
     ```
   </Step>
 
-  <Step title="OutletRoleShop — Role purchases at outlet level">
+  <Step title="OutletRoleShop - Role purchases at outlet level">
     ```bash
     GET https://bridge.presschain.io/abis/OutletRoleShop
     ```
   </Step>
 
-  <Step title="BondManager — Protocol-level bond management">
+  <Step title="BondManager - Protocol-level bond management">
     ```bash
     GET https://bridge.presschain.io/abis/BondManager
     ```
@@ -135,19 +135,19 @@ Implement contracts in this order. Higher priority = called more frequently in t
     ```
   </Step>
 
-  <Step title="RoleManager — Global role assignment and verification">
+  <Step title="RoleManager - Global role assignment and verification">
     ```bash
     GET https://bridge.presschain.io/abis/RoleManager
     ```
   </Step>
 
-  <Step title="SourceRegistry — Source identity registration">
+  <Step title="SourceRegistry - Source identity registration">
     ```bash
     GET https://bridge.presschain.io/abis/SourceRegistry
     ```
   </Step>
 
-  <Step title="tPRESS — ERC-20 token">
+  <Step title="tPRESS - ERC-20 token">
     ```bash
     GET https://bridge.presschain.io/abis/tPRESS
     ```
@@ -162,13 +162,13 @@ Implement contracts in this order. Higher priority = called more frequently in t
     ```
   </Step>
 
-  <Step title="PressGovernance — Governance proposals">
+  <Step title="PressGovernance - Governance proposals">
     ```bash
     GET https://bridge.presschain.io/abis/PressGovernance
     ```
   </Step>
 
-  <Step title="PressFeeRouter / PressTreasury — Fee distribution">
+  <Step title="PressFeeRouter / PressTreasury - Fee distribution">
     ```bash
     GET https://bridge.presschain.io/abis/PressFeeRouter
     ```

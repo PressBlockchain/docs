@@ -13,12 +13,14 @@ icon: server
 | `https://archive.rpc.presschain.io` | Archive JSON-RPC | Historical state queries, all blocks |
 | `wss://ws.presschain.io` | WebSocket | Real-time block and event subscriptions |
 
-Internal (server-side only — never expose publicly):
+Internal (server-side only - never expose publicly):
 
-| | HTTP | WebSocket |
-|---|---|---|
-| Mainnet | `127.0.0.1:8545` | `127.0.0.1:8546` |
-| Testnet | `127.0.0.1:9545` | `127.0.0.1:9546` |
+<div className="pc-data-grid">
+  <div className="pc-data-item"><span className="pc-data-label">Mainnet HTTP</span><span className="pc-data-val">127.0.0.1:8545</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">Mainnet WS</span><span className="pc-data-val">127.0.0.1:8546</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">Testnet HTTP</span><span className="pc-data-val">127.0.0.1:9545</span></div>
+  <div className="pc-data-item"><span className="pc-data-label">Testnet WS</span><span className="pc-data-val">127.0.0.1:9546</span></div>
+</div>
 
 ---
 
@@ -77,7 +79,7 @@ curl https://rpc.presschain.io \
 ### Contract Calls
 
 ```bash
-# eth_call — read a view function
+# eth_call - read a view function
 curl https://rpc.presschain.io \
   -X POST -H "Content-Type: application/json" \
   -d '{
@@ -138,7 +140,7 @@ curl https://rpc.presschain.io \
 ### Event Logs
 
 ```bash
-# Get logs — filter by contract and event topic
+# Get logs - filter by contract and event topic
 curl https://rpc.presschain.io \
   -X POST -H "Content-Type: application/json" \
   -d '{
@@ -164,10 +166,10 @@ import { JsonRpcProvider, WebSocketProvider, Contract, formatUnits } from "ether
 // HTTP provider
 const provider = new JsonRpcProvider("https://rpc.presschain.io");
 
-// Archive provider — for historical state
+// Archive provider - for historical state
 const archive = new JsonRpcProvider("https://archive.rpc.presschain.io");
 
-// WebSocket provider — real-time events
+// WebSocket provider - real-time events
 const ws = new WebSocketProvider("wss://ws.presschain.io");
 
 // Basic queries
@@ -225,7 +227,7 @@ acceptance.on("VoteCast", (capsuleId, voter, support, weight, event) => {
 
 ---
 
-## Archive Node — Historical Queries
+## Archive Node - Historical Queries
 
 Use `archive.rpc.presschain.io` for any query needing state at a specific past block:
 
@@ -288,7 +290,7 @@ echo "Block: ${BLOCK:-N/A}"
 
 | Code | Meaning |
 |---|---|
-| `-32700` | Parse error — invalid JSON |
+| `-32700` | Parse error - invalid JSON |
 | `-32600` | Invalid request |
 | `-32601` | Method not found |
 | `-32602` | Invalid params |

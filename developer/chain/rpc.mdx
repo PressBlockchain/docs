@@ -1,0 +1,296 @@
+---
+title: RPC Endpoints
+description: All PressChain RPC endpoints, supported JSON-RPC methods, WebSocket subscriptions, and rate limits.
+icon: server
+---
+
+## Endpoint Reference
+
+| Endpoint | Type | Use Case |
+|---|---|---|
+| `https://rpc.presschain.io` | JSON-RPC HTTP | Standard EVM queries, tx submission |
+| `https://testnet-rpc.presschain.io` | JSON-RPC HTTP | Testnet-specific queries |
+| `https://archive.rpc.presschain.io` | Archive JSON-RPC | Historical state queries, all blocks |
+| `wss://ws.presschain.io` | WebSocket | Real-time block and event subscriptions |
+
+Internal (server-side only — never expose publicly):
+
+| | HTTP | WebSocket |
+|---|---|---|
+| Mainnet | `127.0.0.1:8545` | `127.0.0.1:8546` |
+| Testnet | `127.0.0.1:9545` | `127.0.0.1:9546` |
+
+---
+
+## Supported JSON-RPC Methods
+
+### Chain State
+
+```bash
+# Current block number
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}'
+# → {"jsonrpc":"2.0","id":1,"result":"0x100123"}
+
+# Chain ID
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_chainId","params":[],"id":1}'
+# → {"result":"0x499b4da"}  (77117002 decimal)
+
+# Peer count
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"net_peerCount","params":[],"id":1}'
+
+# Gas price
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_gasPrice","params":[],"id":1}'
+```
+
+### Accounts & Balances
+
+```bash
+# PRESS balance for an address
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getBalance",
+    "params": ["0xYOUR_ADDRESS", "latest"],
+    "id": 1
+  }'
+
+# Transaction count (nonce)
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getTransactionCount",
+    "params": ["0xYOUR_ADDRESS", "latest"],
+    "id": 1
+  }'
+```
+
+### Contract Calls
+
+```bash
+# eth_call — read a view function
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_call",
+    "params": [{
+      "to": "0x4b39edF3fA0e7DBAFFA45FDCBbE08B6681D1076b",
+      "data": "0x..."
+    }, "latest"],
+    "id": 1
+  }'
+
+# Estimate gas
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_estimateGas",
+    "params": [{"to": "0x...", "data": "0x..."}],
+    "id": 1
+  }'
+```
+
+### Transactions
+
+```bash
+# Submit a signed transaction
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_sendRawTransaction",
+    "params": ["0xSIGNED_TX_HEX"],
+    "id": 1
+  }'
+
+# Get transaction by hash
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getTransactionByHash",
+    "params": ["0xTX_HASH"],
+    "id": 1
+  }'
+
+# Get transaction receipt (after mining)
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getTransactionReceipt",
+    "params": ["0xTX_HASH"],
+    "id": 1
+  }'
+```
+
+### Event Logs
+
+```bash
+# Get logs — filter by contract and event topic
+curl https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "eth_getLogs",
+    "params": [{
+      "fromBlock": "0x0",
+      "toBlock": "latest",
+      "address": "0x121885Cd339BF495cbC63e0f49e16c7CB2A1C62a",
+      "topics": ["0xCAPSULE_ACCEPTED_TOPIC_HASH"]
+    }],
+    "id": 1
+  }'
+```
+
+---
+
+## ethers.js v6
+
+```typescript
+import { JsonRpcProvider, WebSocketProvider, Contract, formatUnits } from "ethers";
+
+// HTTP provider
+const provider = new JsonRpcProvider("https://rpc.presschain.io");
+
+// Archive provider — for historical state
+const archive = new JsonRpcProvider("https://archive.rpc.presschain.io");
+
+// WebSocket provider — real-time events
+const ws = new WebSocketProvider("wss://ws.presschain.io");
+
+// Basic queries
+const block   = await provider.getBlockNumber();
+const balance = await provider.getBalance("0xADDRESS");
+const network = await provider.getNetwork();
+
+console.log("Chain ID:", network.chainId.toString()); // "77117002"
+console.log("Block:   ", block);
+console.log("Balance: ", formatUnits(balance, 18), "PRESS");
+```
+
+---
+
+## WebSocket Subscriptions
+
+```typescript
+const ws = new WebSocketProvider("wss://ws.presschain.io");
+
+// Subscribe to new blocks
+ws.on("block", (blockNumber: number) => {
+  console.log("New block:", blockNumber);
+});
+
+// Subscribe to ArticleRegistry events
+import ArticleRegistryABI from "./abis/ArticleRegistry.json";
+
+const registry = new Contract(
+  "0x121885Cd339BF495cbC63e0f49e16c7CB2A1C62a",
+  ArticleRegistryABI,
+  ws
+);
+
+// Watch for capsule submissions
+registry.on("CapsuleSubmitted", (capsuleId, outletSlug, submitter, event) => {
+  console.log(`New capsule #${capsuleId} from ${outletSlug}`);
+});
+
+// Watch for capsule acceptance
+registry.on("CapsuleAccepted", (capsuleId, outletSlug, acceptedAt, event) => {
+  console.log(`Capsule #${capsuleId} accepted at block ${event.blockNumber}`);
+});
+
+// Watch for votes cast
+const acceptance = new Contract(
+  "0x63D0c0b51a3856a539b36a909517a18BddDb4a32",
+  CapsuleAcceptanceABI,
+  ws
+);
+
+acceptance.on("VoteCast", (capsuleId, voter, support, weight, event) => {
+  console.log(`Vote on #${capsuleId}: ${support ? "YES" : "NO"} (weight: ${weight})`);
+});
+```
+
+---
+
+## Archive Node — Historical Queries
+
+Use `archive.rpc.presschain.io` for any query needing state at a specific past block:
+
+```typescript
+// Get balance at a specific block
+const historicalBalance = await archive.getBalance(
+  "0xADDRESS",
+  1_000_000   // block number
+);
+
+// Get contract state at a past block
+const pastCapsuleCount = await registry.capsuleCount({ blockTag: 500_000 });
+
+// Full log history from genesis
+const allAcceptances = await archive.getLogs({
+  address: "0x121885Cd339BF495cbC63e0f49e16c7CB2A1C62a",
+  fromBlock: 0,
+  toBlock: "latest",
+  topics: [registry.interface.getEvent("CapsuleAccepted")!.topicHash]
+});
+```
+
+---
+
+## Rate Limits
+
+| Endpoint | Limit | Notes |
+|---|---|---|
+| Public HTTP RPC | 100 req/min per IP | Standard reads |
+| `eth_sendRawTransaction` | 20 req/min per IP | Write protection |
+| Archive RPC | 20 req/min per IP | Heavy queries |
+| WebSocket subscriptions | 10 per connection | |
+
+For high-throughput integrations (indexers, data pipelines), contact PressLabs about dedicated RPC access.
+
+---
+
+## Health Check
+
+```bash
+#!/bin/bash
+# Quick RPC health check
+RESULT=$(curl -s https://rpc.presschain.io \
+  -X POST -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}')
+
+BLOCK=$(echo $RESULT | python3 -c "
+import sys, json
+r = json.load(sys.stdin)
+print(int(r.get('result','0x0'), 16))
+" 2>/dev/null)
+
+echo "RPC Status: $([ -n "$BLOCK" ] && echo "OK" || echo "FAIL")"
+echo "Block: ${BLOCK:-N/A}"
+```
+
+---
+
+## Error Codes
+
+| Code | Meaning |
+|---|---|
+| `-32700` | Parse error — invalid JSON |
+| `-32600` | Invalid request |
+| `-32601` | Method not found |
+| `-32602` | Invalid params |
+| `-32603` | Internal error |
+| `-32000` | Server error (gas too low, nonce mismatch, etc.) |

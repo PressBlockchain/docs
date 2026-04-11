@@ -1,0 +1,204 @@
+---
+title: Infrastructure
+description: Server topology, service isolation, security model, Docker vs systemd, and the cPanel hybrid deployment.
+icon: server
+---
+
+## Server Topology
+
+PressChain runs on two production servers with strict service separation. Nothing protocol-critical and nothing outlet-facing share a server with each other by accident — the split is deliberate.
+
+<CardGroup cols={2}>
+  <Card title="38.83.53.142 — Chain Host" icon="cube" color="#009BF9">
+    EVM node, indexer, bridge middleware, Postgres, Redis, MinIO. The static marketing site (Vite/cPanel) also deploys here.
+  </Card>
+  <Card title="38.83.53.58 — App Host" icon="display" color="#002A43">
+    All Next.js dApps via systemd. Portal, outlet, court, proposals, ads, status, docs, faucet. Apache proxy front-end.
+  </Card>
+</CardGroup>
+
+---
+
+## Chain Host (38.83.53.142) — Service Map
+
+```
+38.83.53.142
+│
+├── EVM Node (geth-compatible)
+│   ├── Mainnet JSON-RPC  → 127.0.0.1:8545
+│   ├── Mainnet WS        → 127.0.0.1:8546
+│   ├── Testnet JSON-RPC  → 127.0.0.1:9545
+│   ├── Testnet WS        → 127.0.0.1:9546
+│   ├── Mainnet P2P       → :40303 (public)
+│   └── Testnet P2P       → :40304 (public)
+│
+├── PostgreSQL            → 127.0.0.1:5432 (internal only)
+├── Redis                 → 127.0.0.1:6379 (internal only)
+├── MinIO                 → 127.0.0.1:9000 (internal only)
+│
+├── Internal Services (all 127.0.0.1, high ports)
+│   ├── API Gateway       → :46100
+│   ├── Protocol API      → :46101
+│   ├── Indexer           → :46102
+│   ├── Court Engine      → :46103
+│   ├── Media Engine      → :46104
+│   ├── Burn Engine       → :46105
+│   ├── Node Sales        → :46106
+│   ├── Vault Coordinator → :46107
+│   ├── Notify            → :46108
+│   └── Scheduler         → :46109
+│
+├── Bridge API            → proxied to bridge.presschain.io
+│
+└── Static site           → /home/pcpressroot/public_html/
+                            (cPanel Apache → presschain.io)
+```
+
+---
+
+## App Host (38.83.53.58) — Service Map
+
+```
+38.83.53.58
+│
+├── presschain-next@portal     → 127.0.0.1:3010 → portal.presschain.io
+├── presschain-next@outlet     → 127.0.0.1:3011 → outlet.presschain.io
+├── presschain-next@court      → 127.0.0.1:3012 → court.presschain.io
+├── presschain-next@proposals  → 127.0.0.1:3013 → proposals.presschain.io
+├── presschain-next@ads        → 127.0.0.1:3014 → ads.presschain.io
+├── presschain-next@status     → 127.0.0.1:3015 → status.presschain.io
+├── presschain-next@docs       → 127.0.0.1:3016 → docs.presschain.io
+├── presschain-next@faucet     → 127.0.0.1:3017 → faucet.presschain.io
+│
+└── Apache (cPanel)
+    Proxy configs per subdomain:
+    /etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/<domain>/proxy.conf
+```
+
+---
+
+## Security Model
+
+<Warning>
+Only ports **80** and **443** are publicly exposed. Everything else is internal. P2P ports (40303, 40304) are also open but only for chain consensus — not for application traffic.
+</Warning>
+
+| Layer | Rule |
+|---|---|
+| Firewall | Drop all inbound except 80, 443, 40303, 40304, 22 (SSH restricted) |
+| Application layer | WordPress and outlet apps never touch RPC |
+| API Gateway | Rate limiting, nonce verification, replay protection, session checks |
+| PressChain ↔ PressHash | Isolated processes with resource caps |
+| TLS | All public endpoints — Let's Encrypt, auto-renewal |
+
+```bash
+# UFW rules
+ufw allow 22/tcp    # SSH — restrict to known IPs in production
+ufw allow 80/tcp    # HTTP (→ HTTPS redirect)
+ufw allow 443/tcp   # HTTPS
+ufw allow 40303     # Mainnet P2P
+ufw allow 40304     # Testnet P2P
+ufw default deny incoming
+ufw default allow outgoing
+```
+
+---
+
+## MinIO (Vault Staging)
+
+MinIO serves as the local S3-compatible object store for evidence staging before Vault proofs are committed on-chain.
+
+```
+MinIO bucket layout (internal, port 9000)
+├── capsule-evidence/    Evidence objects pending vault proof
+├── capsule-content/     Article content blobs
+└── vault-proofs/        Availability proof records
+```
+
+Vault operators are challenged for availability proofs. Failure triggers bond penalties via the Vault Coordinator service.
+
+---
+
+## Chain Data Paths
+
+```bash
+# EVM node chain data (mainnet)
+/var/lib/presschain/mainnet/
+
+# EVM node chain data (testnet)
+/var/lib/presschain/testnet/
+
+# PostgreSQL data (indexer)
+/var/lib/postgres/presschain/
+
+# Backups
+/var/backups/presschain/   # daily DB dumps
+```
+
+---
+
+## Service Startup Order
+
+When recovering from a full restart, services must come up in dependency order:
+
+```bash
+# 1. Storage layer
+systemctl start postgres redis minio
+sleep 15  # allow Postgres to fully initialize
+
+# 2. Chain node
+systemctl start presschain-node-mainnet
+# Wait for sync before starting indexer
+
+# 3. Indexer (needs chain to be responsive)
+systemctl start presschain-indexer
+
+# 4. Internal protocol services
+systemctl start presschain-gateway
+systemctl start presschain-protocol-api
+systemctl start presschain-court-engine
+systemctl start presschain-burn-engine
+systemctl start presschain-media-engine
+
+# 5. Bridge API (depends on protocol API + indexer)
+systemctl start presschain-bridge
+# or: pm2 restart presschain-bridge
+
+# 6. App services (on .58 server)
+for s in portal outlet court proposals ads status docs faucet; do
+  sudo systemctl start presschain-next@$s
+done
+
+# 7. Rebuild Apache proxy and restart
+/scripts/rebuildhttpdconf && /scripts/restartsrv_httpd
+```
+
+---
+
+## cPanel Deploy Model
+
+The app host uses cPanel-managed Apache for SSL termination and reverse proxy. The key quirk:
+
+```bash
+# Always use \cp (backslash) — bypasses interactive cp alias
+\cp -rf dist/. /home/pcpressroot/public_html/
+
+# Fix ownership after any copy as root
+chown -R pcpressroot:pcpressroot /home/pcpressroot/public_html/
+
+# Rebuild Apache config from cPanel template and restart
+/scripts/rebuildhttpdconf && /scripts/restartsrv_httpd
+```
+
+Do not use `service apache2` or `systemctl apache2` directly on cPanel servers — use the cPanel scripts only.
+
+---
+
+## Decentralization Roadmap
+
+| Phase | State | Notes |
+|---|---|---|
+| **Now** | Single-operator RPC, PoA consensus | Architecture supports community validators |
+| **Phase 2** | Community RPC operators join `rpc.presschain.io` load balancer | URLs unchanged |
+| **Phase 3** | Multi-validator consensus activated | Council authority narrows to emergency-only |
+| **Phase 4** | Protocol fully autonomous | PressLabs is one participant among many |

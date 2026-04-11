@@ -1,0 +1,170 @@
+---
+title: WordPress / SYNC Plugin
+description: Architecture, security model, publishing flow, and developer integration for PressHash WordPress outlets.
+icon: wordpress
+---
+
+## Security Architecture
+
+**WordPress never connects to RPC. WordPress never handles keys.**
+
+```
+WordPress PHP / Gutenberg JS
+      │
+      │  HTTPS · signed payloads only
+      ▼
+API Gateway → Bridge → Protocol API → Chain
+```
+
+WordPress sees a controlled web API. The chain is protected. This is a hard architectural rule.
+
+## SYNC Plugin Responsibilities
+
+The SYNC plugin (required, 50 PRESS):
+
+1. Converts published WordPress posts into Capsule drafts
+2. Extracts title, body, metadata, tags, categories, featured image
+3. Suggests structured claims from article text
+4. Submits draft to PressChain staging queue
+5. Renders Capsule status in Gutenberg sidebar panel
+6. Renders voting widget on post pages during acceptance window
+7. Renders canonical badge after acceptance
+8. Enforces Press Network feed module presence
+
+## WordPress Config
+
+```php
+// wp-config.php
+define('PRESSCHAIN_BRIDGE_URL',       'https://bridge.presschain.io');
+define('PRESSCHAIN_OUTLET_SLUG',      'the-bay-tribune');
+define('PRESSCHAIN_DEFAULT_POLICY_ID', '1');
+define('PRESSCHAIN_AUTO_STAGE',        true);
+define('PRESSCHAIN_PRESS_FEED_ENABLED', true);
+define('PRESSCHAIN_RIGHTS_ENABLED',    false);
+define('PRESSCHAIN_ADS_ENABLED',       false);
+```
+
+## Publishing Flow
+
+```
+Editor clicks Publish in WordPress
+         │
+         ├──→ Post goes live on site (immediate, standard WP)
+         │
+         └──→ SYNC creates Capsule draft
+                    │
+                    ▼
+             Journalist reviews in Gutenberg panel:
+             - Claims (auto-suggested, editable)
+             - Evidence (upload files / URLs)
+             - Contributors (author + editor shares)
+                    │
+                    ▼
+             Journalist clicks "Submit to PressChain"
+             PressKey opens in browser → journalist approves
+             30 PRESS fee deducted
+                    │
+                    ▼
+             Capsule enters 72h acceptance queue
+                    │
+             ┌──────┴───────┐
+           Accepted       Rejected
+             │                │
+         Canonical         Not Canonical
+         Badge shown       (article stays live)
+         Distribution on   No Press Network dist
+```
+
+## Gutenberg Panel HTML Structure
+
+The SYNC plugin renders this panel in the Gutenberg sidebar:
+
+```jsx
+// Simplified SYNC panel component
+function PressChainPanel({ postId }) {
+  const [capsule, setCapsule] = useState(null);
+  const [status, setStatus] = useState("idle");
+
+  async function submit() {
+    setStatus("signing");
+    const draft = await buildCapsuleDraft(postId);
+
+    const { signature, sessionToken } = await window.presskey.request({
+      action: "SUBMIT_CAPSULE",
+      capsule: draft,
+    });
+
+    const res = await fetch(`${BRIDGE_URL}/capsules/create`, {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${sessionToken}` },
+      body: JSON.stringify({ ...draft, signature }),
+    });
+
+    const data = await res.json();
+    setCapsule(data.capsule);
+    setStatus("submitted");
+  }
+
+  if (status === "submitted") {
+    return <CapsuleStatusPanel capsule={capsule} />;
+  }
+
+  return (
+    <PanelBody title="PressChain">
+      <ClaimsEditor postId={postId} />
+      <EvidenceUploader />
+      <ContributorsList />
+      <Button onClick={submit}>Submit to PressChain</Button>
+    </PanelBody>
+  );
+}
+```
+
+## Shortcodes
+
+```
+[presschain_vote capsule_id="247"]
+[presschain_badge capsule_id="247"]
+[presschain_integrity capsule_id="247"]
+[presschain_press_feed limit="5" topic=""]
+```
+
+## Press Network Feed (Mandatory)
+
+```php
+// Register shortcode
+add_shortcode('presschain_press_feed', function($atts) {
+  $args = shortcode_atts(['limit' => 5, 'topic' => ''], $atts);
+  $capsules = fetch_press_network_feed($args['limit'], $args['topic']);
+  return render_feed_widget($capsules);
+});
+
+function fetch_press_network_feed($limit, $topic) {
+  $url = PRESSCHAIN_BRIDGE_URL . "/capsules?status=accepted&limit={$limit}";
+  if ($topic) $url .= "&topic={$topic}";
+  $response = wp_remote_get($url);
+  return json_decode(wp_remote_retrieve_body($response), true);
+}
+```
+
+## Troubleshooting
+
+| Issue | Cause | Fix |
+|---|---|---|
+| Panel missing in editor | Plugin not activated | Deactivate → Reactivate SYNC |
+| "Outlet not active" | Domain verification lapsed | Re-verify in Portal |
+| "Session expired" | PressKey token timed out | SYNC Settings → Re-connect PressKey |
+| Voting widget not showing | Capsule not in active window | Check capsule status via Bridge |
+| Bridge connection refused | Service down | `curl https://bridge.presschain.io/health` |
+| Feed not rendering | Press Network module disabled | Re-enable in SYNC settings (mandatory) |
+
+## REST API Endpoints (WordPress → Bridge)
+
+```
+POST /wp-json/presschain/v1/submit     Submit a capsule draft
+GET  /wp-json/presschain/v1/status/:id Get capsule status for post
+POST /wp-json/presschain/v1/verify     Verify outlet domain
+GET  /wp-json/presschain/v1/feed       Fetch Press Network feed
+```
+
+These are internal WordPress REST routes that SYNC exposes. They proxy to Bridge with the outlet's session token stored server-side.

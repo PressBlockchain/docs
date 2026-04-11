@@ -1,0 +1,137 @@
+---
+title: What Is a Capsule?
+description: The structured form of your journalism on PressChain — not just an article, but a permanent governance object.
+icon: box
+---
+
+## The Simplest Answer
+
+A **Capsule** is your article, plus:
+
+- Your identity at the moment you published
+- The specific claims your article makes
+- The evidence backing those claims
+- Everyone who contributed (authors, editors, researchers)
+- The full history of votes, disputes, corrections, and integrity findings
+
+It lives permanently on PressChain. It can never be deleted. It can be corrected — but the original always stays visible.
+
+---
+
+## Why Not Just an Article?
+
+Consider what's missing when journalism is just a webpage:
+
+| Normal Article | PressChain Capsule |
+|---|---|
+| Can be silently edited | Every change creates a revision — originals stay |
+| Can be deleted | Permanent — no deletion |
+| Evidence is "trust us" | Evidence is hash-committed at publication |
+| Disputed through PR | Disputed through on-chain court, claim by claim |
+| Corrections are informal | Corrections are governance objects with their own votes |
+| Rights unclear | Rights licensing built in, revenue auto-split |
+| Identity informal | Author identity cryptographically tied to publication |
+
+A Capsule is what journalism looks like when it's treated as infrastructure — not content.
+
+---
+
+## What's Inside a Capsule
+
+### Your Identity Snapshot
+
+When you publish, PressChain records exactly who you were *at that moment*:
+
+- Your PressKey address (your permanent journalist ID)
+- Your role (Citizen / Reporter / Verified Author)
+- Your outlet and whether its domain was verified
+- Your reputation score
+- Your bond state
+
+This never changes. If you leave your outlet, get a new role, or change anything later — the historical record still shows who you were when you hit publish.
+
+### Structured Claims
+
+Claims are the specific assertions your article makes. Instead of treating your article as one big blob, PressChain structures what you're actually claiming:
+
+| Claim Type | When to Use |
+|---|---|
+| `reporting` | Direct facts you observed or documented |
+| `allegation` | Something a source alleges — you're reporting it, not asserting it |
+| `confirmed` | Facts independently verified through multiple sources |
+| `analysis` | Your interpretation — not disputed as factual claims |
+| `correction` | A correction to a previously published claim |
+| `opinion` | Clearly labeled opinion content |
+
+**Why claims matter:** If someone disputes your story, they dispute *specific claims* — not the whole article. A politician challenging your vote count can't use that challenge to invalidate your reporting on campaign finances.
+
+### Evidence
+
+Each piece of evidence you attach gets:
+1. Uploaded to the Vault Network (secure distributed storage)
+2. Hashed with SHA-256
+3. That hash stored permanently on PressChain
+
+Later, anyone can take your evidence file, hash it, and compare to the on-chain hash. If they match — the evidence is unchanged. If they don't — tampering is provable.
+
+Evidence types include:
+- Archived page snapshots (web pages as they existed when you reported)
+- Documents (filings, reports, records)
+- Transcripts (interviews, meetings)
+- Media files (photos, video, audio)
+- Data files (spreadsheets, datasets)
+
+### Contributors
+
+Your full newsroom team is documented:
+- Who wrote it
+- Who edited it
+- Who researched it
+- Who fact-checked it
+
+Each person gets a share (in basis points) of any rights licensing revenue. A typical split: Author 70%, Editor 30%.
+
+### The Lifecycle
+
+```
+Submitted
+    ↓
+Voting Open (72 hours)
+    ↓
+Accepted ──────────────────────→ Canonical
+    ↓                               ↓
+Rejected              Distribution Active
+    ↓                               ↓
+Not Canonical            Rights Licensing On
+                                    ↓
+                         Possible Dispute
+                                    ↓
+                         Court Process
+                                    ↓
+                         Integrity Label Applied
+```
+
+---
+
+## What "Canonical" Means
+
+Canonical means your Capsule passed public acceptance — 60% weighted approval and 5% quorum of eligible voters, within 72 hours.
+
+It means:
+- Your article is permanently on the PressChain record
+- It displays a "✓ Canonical on PressChain" badge
+- It enters the Press Network distribution feed
+- It's eligible for rights licensing
+- It's eligible for the Rights Marketplace
+
+Non-canonical articles still live on your website — they just don't have the protocol's permanent record attached.
+
+---
+
+## Capsule vs. Article — Side by Side
+
+*Maya's story about city council corruption:*
+
+**As a normal article:** Published Tuesday. City attorney calls the editor Wednesday. Story is quietly updated Thursday to soften the vote count claim. No one knows the original said "7 members voted yes" — now it says "a majority."
+
+**As a PressChain Capsule:** The original Capsule with "7 members voted yes" is permanently on-chain with the council session archive as evidence. If a correction is needed, a new Capsule is created pointing back to the original. Both remain visible. The correction has its own vote. The history is permanent.

@@ -1,0 +1,135 @@
+---
+title: Set Up PressKey
+description: Your journalist identity on PressChain — install, create your wallet, and understand what it does.
+icon: key
+---
+
+## What PressKey Is
+
+PressKey is your identity on PressChain. Think of it as a passport that never expires, can't be forged, and proves you are who you say you are every time you take any action on the protocol.
+
+It's a browser extension that:
+- Holds your private key (encrypted, never leaves your device)
+- Signs every action you take — voting, publishing, responding to court
+- Shows your active roles and PRESS balance
+- Connects to every PressChain app automatically
+
+**You never share your PressKey with anyone.** Not your editor, not your outlet's IT team, not PressLabs.
+
+---
+
+## Install PressKey (5 minutes)
+
+<Steps>
+  <Step title="Visit key.presschain.io">
+    Go to [key.presschain.io](https://key.presschain.io) and install the browser extension. Available for Chrome, Brave, and Firefox.
+  </Step>
+  <Step title="Create your wallet">
+    Click **Create New Wallet**.
+
+    PressKey generates a private key using cryptographically secure randomness — this is your permanent journalist identity on PressChain. It happens instantly and entirely on your device.
+  </Step>
+  <Step title="Choose a strong passphrase">
+    This passphrase encrypts your key in local storage. It never leaves your device. Choose something strong and memorable:
+
+    - At least 12 characters
+    - Mix of words, numbers, and symbols
+    - Never reuse from another service
+
+    <Warning>
+    If you forget your passphrase and lose your seed phrase, your wallet is unrecoverable. There is no "forgot password" option. This is by design — it means no one else can recover it either.
+    </Warning>
+  </Step>
+  <Step title="Write down your seed phrase">
+    PressKey shows you 12 words. **Write them on paper. Right now.**
+
+    Do not:
+    - Screenshot it
+    - Type it into Notes or a cloud doc
+    - Email it to yourself
+    - Store it in your password manager
+
+    This is the only way to recover your wallet on a new device. Keep it somewhere physically safe.
+  </Step>
+  <Step title="Confirm your seed phrase">
+    PressKey asks you to confirm by selecting the words in order. This ensures you wrote them down correctly.
+  </Step>
+  <Step title="Set your network">
+    In PressKey settings:
+    - **Testnet** → for learning and testing (Chain ID 77117002)
+    - **Mainnet** → for real journalism (Chain ID 77117001)
+
+    Start on Testnet and switch when you're ready.
+  </Step>
+</Steps>
+
+---
+
+## Get Testnet PRESS
+
+Testnet PRESS (tPRESS) is free. You need some to practice with before going live.
+
+Visit [faucet.presschain.io](https://faucet.presschain.io), connect PressKey, and click **Request PRESS**. You'll receive test tokens within seconds.
+
+---
+
+## What PressKey Shows You
+
+When you click the PressKey extension icon:
+
+```
+┌──────────────────────────────────┐
+│ 🔑 PressKey                      │
+├──────────────────────────────────┤
+│ Maya Chen                        │
+│ 0x7f...3a9b                      │
+│                                  │
+│ Balance:  847.3 PRESS            │
+│                                  │
+│ Active Roles:                    │
+│   ● Reporter  [Bond: 50k PRESS]  │
+│   Reputation: 1.6×               │
+│   Vote weight: 4.8               │
+│                                  │
+│ Network: PressChain Testnet      │
+│ RPC: rpc.presschain.io           │
+└──────────────────────────────────┘
+```
+
+---
+
+## When PressKey Opens Automatically
+
+PressKey pops up any time you take a protocol action that requires your signature. You'll see exactly what's being signed:
+
+| Action | What You Approve |
+|---|---|
+| Voting on a Capsule | Vote direction + your current weight |
+| Submitting a Capsule | Article details + 30 PRESS fee |
+| Purchasing a role | Role type + bond amount |
+| Filing a dispute | Dispute details + 10 PRESS bond |
+| Sending PRESS | Recipient + amount |
+
+You can always **Reject** any approval. Nothing happens until you approve.
+
+---
+
+## Recovering Your Wallet
+
+On a new device or browser:
+
+1. Install PressKey from [key.presschain.io](https://key.presschain.io)
+2. Click **Import Existing Wallet**
+3. Enter your 12-word seed phrase
+4. Set a new passphrase
+5. Your wallet, roles, reputation, and balance are all restored
+
+Your identity lives on the blockchain — not on any server. Restoring PressKey just gives you back the key to that identity.
+
+---
+
+## PressKey and Your Outlet's WordPress
+
+If your outlet uses the WordPress SYNC plugin, PressKey connects to it without you doing anything special. When you publish in WordPress, SYNC creates the Capsule and then asks PressKey to sign it. The approval popup appears in your browser — you approve, and the Capsule is submitted.
+
+**WordPress never sees your private key.** It only receives the signed approval. This is the core security design of PressHash.

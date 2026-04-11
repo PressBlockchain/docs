@@ -1,0 +1,261 @@
+---
+title: Capsule Standard
+description: The atomic publishing object — full JSON schema, field definitions, status values, and integrity labels.
+icon: box
+---
+
+## What a Capsule Is
+
+A Capsule is not text stored on-chain. It is a governance object with identity, structured claims, evidence commitments, lifecycle state, economic routing, and distribution eligibility. Every Capsule has a permanent ID and a permanent history.
+
+## Full JSON Schema
+
+The live payload shape from `GET /capsules/:id`:
+
+```json
+{
+  "ok": true,
+  "found": true,
+  "source": "rust-api",
+  "capsuleId": "1",
+
+  "capsule": {
+    "id": "1",
+    "outletSlug": "the-bay-tribune",
+    "articleSlug": "city-council-budget-vote",
+    "title": "City Council Approves $42M Infrastructure Budget",
+    "metadataURI": "ipfs://QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco",
+    "contentHash": "0x9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+    "submitter": "0xJournalistWalletAddress",
+    "status": "accepted",
+    "capsuleType": "original",
+    "policyId": "1",
+    "trustedPublisherAtSubmit": false,
+    "yesVotes": "1250000000000000000000",
+    "noVotes": "250000000000000000000",
+    "weightedYes": "3750",
+    "weightedNo": "500",
+    "weightedParticipation": "4250",
+    "opensAt": "1704153600",
+    "closesAt": "1704412800",
+    "acceptedAt": "1704380000",
+    "finalizedAt": "1704380100",
+    "finalizedArticleId": "1",
+    "rootCapsuleId": null,
+    "parentCapsuleId": null,
+    "revisionNumber": 0,
+    "finalizedBy": "0xFinalizerAddress"
+  },
+
+  "policy": {
+    "note": "Bridge-backed. Direct Rust getter pending finalization.",
+    "policyId": "1",
+    "approvalThreshold": 60,
+    "quorumThreshold": 5,
+    "votingWindowSeconds": 259200
+  },
+
+  "outlet": {
+    "outletId": "1",
+    "outletMetadataURI": "ipfs://Qm...",
+    "outletSlug": "the-bay-tribune",
+    "outletWallet": "0xOutletWalletAddress",
+    "status": "active"
+  },
+
+  "content": {
+    "capsuleId": "1",
+    "contentHash": "0x9f86d0...",
+    "contentType": "article",
+    "contentURI": "https://baytribune.com/city-council-budget-vote",
+    "createdAt": "1704153600",
+    "createdBy": "0xJournalistWalletAddress",
+    "exists": true,
+    "language": "en",
+    "metadataURI": "ipfs://Qm...",
+    "outletId": "1",
+    "outletMetadataURI": "ipfs://Qm...",
+    "outletSlug": "the-bay-tribune",
+    "outletWallet": "0xOutletWalletAddress",
+    "status": "published",
+    "subtitle": "7-2 vote approves major road and water upgrades",
+    "summary": "The city council voted Tuesday to approve a $42M infrastructure package...",
+    "title": "City Council Approves $42M Infrastructure Budget",
+    "visibility": "public"
+  },
+
+  "evidence": [
+    {
+      "active": true,
+      "capsuleId": "1",
+      "contentHash": "0xdef456...",
+      "createdAt": "1704153600",
+      "evidenceId": "1",
+      "evidenceType": "archived_page",
+      "isPrimary": true,
+      "label": "Council session archive — Jan 2 2024",
+      "mimeType": "text/html",
+      "submittedBy": "0xJournalistWalletAddress",
+      "uri": "https://archive.org/web/20240102/https://citycouncil.gov/session-jan-2"
+    },
+    {
+      "active": true,
+      "capsuleId": "1",
+      "contentHash": "0xghi789...",
+      "createdAt": "1704153600",
+      "evidenceId": "2",
+      "evidenceType": "transcript",
+      "isPrimary": false,
+      "label": "Meeting transcript — Infrastructure budget discussion",
+      "mimeType": "text/plain",
+      "submittedBy": "0xJournalistWalletAddress",
+      "uri": "https://vault.presschain.io/evidence/abc123"
+    }
+  ],
+
+  "contributors": [
+    {
+      "active": true,
+      "attributionURI": "https://presschain.io/journalist/0x...",
+      "capsuleId": "1",
+      "contributionType": "author",
+      "contributorId": "1",
+      "createdAt": "1704153600",
+      "displayName": "Maya Chen",
+      "role": 2,
+      "shareBps": 7000,
+      "wallet": "0xMayaWalletAddress"
+    },
+    {
+      "active": true,
+      "attributionURI": "https://presschain.io/journalist/0x...",
+      "capsuleId": "1",
+      "contributionType": "editor",
+      "contributorId": "2",
+      "createdAt": "1704153600",
+      "displayName": "David Okafor",
+      "role": 3,
+      "shareBps": 3000,
+      "wallet": "0xDavidWalletAddress"
+    }
+  ],
+
+  "revision": {
+    "capsuleId": "1",
+    "changeSummaryURI": null,
+    "createdAt": "1704153600",
+    "createdBy": "0xJournalistWalletAddress",
+    "current": true,
+    "currentCapsuleId": "1",
+    "history": [],
+    "parentCapsuleId": null,
+    "revisionFeePaid": "0",
+    "revisionNumber": 0,
+    "revisionReason": null,
+    "rootCapsuleId": "1",
+    "status": "current"
+  }
+}
+```
+
+## Field Reference
+
+### capsule.*
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | string | Unique capsule ID |
+| `outletSlug` | string | Publishing outlet identifier |
+| `articleSlug` | string | URL-friendly article identifier |
+| `title` | string | Article title |
+| `metadataURI` | string | IPFS URI for extended metadata |
+| `contentHash` | bytes32 | SHA-256 of article content |
+| `submitter` | address | Journalist wallet at submission |
+| `status` | string | `pending`, `accepted`, `rejected`, `finalized`, `superseded` |
+| `capsuleType` | string | `original`, `correction`, `retraction`, `supporting` |
+| `policyId` | string | Acceptance policy governing this capsule |
+| `trustedPublisherAtSubmit` | bool | Whether outlet had trusted publisher status |
+| `yesVotes` | string | Raw weighted yes vote bigint |
+| `noVotes` | string | Raw weighted no vote bigint |
+| `weightedYes` | string | Computed weighted yes score |
+| `weightedNo` | string | Computed weighted no score |
+| `weightedParticipation` | string | Total weighted participation |
+| `opensAt` | string | Unix timestamp — voting window open |
+| `closesAt` | string | Unix timestamp — voting window close |
+| `acceptedAt` | string | Unix timestamp — acceptance confirmed |
+| `finalizedAt` | string | Unix timestamp — on-chain finalization |
+| `finalizedArticleId` | string | Article ID post-finalization |
+| `rootCapsuleId` | string\|null | Original capsule (for revisions) |
+| `parentCapsuleId` | string\|null | Direct parent capsule |
+| `revisionNumber` | number | 0 = original |
+| `finalizedBy` | address | Wallet that called finalize |
+
+### evidence[*]
+
+| Field | Type | Description |
+|---|---|---|
+| `evidenceId` | string | Unique evidence item ID |
+| `evidenceType` | string | `archived_page`, `transcript`, `document`, `media`, `data` |
+| `isPrimary` | bool | Whether this is a primary evidence item |
+| `label` | string | Human-readable description |
+| `mimeType` | string | MIME type of the evidence file |
+| `contentHash` | string | SHA-256 of the evidence file |
+| `uri` | string | Location of the evidence file |
+| `submittedBy` | address | Wallet that submitted this evidence |
+| `active` | bool | Whether evidence is active |
+
+### contributors[*]
+
+| Field | Type | Description |
+|---|---|---|
+| `contributorId` | string | Unique contributor ID |
+| `wallet` | address | Contributor's wallet |
+| `displayName` | string | Public display name |
+| `role` | number | Role ID (1=Journalist, 2=Reporter, 3=Editor…) |
+| `contributionType` | string | `author`, `editor`, `researcher`, `reviewer` |
+| `shareBps` | number | Revenue share in basis points (out of 10000) |
+| `attributionURI` | string | Public attribution profile URL |
+| `active` | bool | Whether contribution is active |
+
+### revision.*
+
+| Field | Description |
+|---|---|
+| `currentCapsuleId` | The authoritative current version |
+| `rootCapsuleId` | The original in the revision chain |
+| `parentCapsuleId` | Direct parent (for multi-step corrections) |
+| `revisionNumber` | Depth in revision chain (0 = original) |
+| `revisionReason` | Plain-language explanation of correction |
+| `changeSummaryURI` | Link to detailed change log |
+| `history` | Array of all prior capsule IDs in chain |
+
+## Status Values
+
+| Status | Meaning |
+|---|---|
+| `pending` | Voting window open |
+| `accepted` | Passed acceptance — canonical |
+| `rejected` | Failed quorum or approval threshold |
+| `finalized` | On-chain record written, distribution active |
+| `superseded` | Replaced by a newer revision Capsule |
+
+## Integrity Labels
+
+| Label | Applied By |
+|---|---|
+| `clean` | Default — no disputes |
+| `verified` | Court confirmed accuracy |
+| `contested` | Active dispute in progress |
+| `unresolved` | Court concluded, no clear verdict |
+| `misleading` | Court found material inaccuracy |
+| `fraudulent` | Court found deliberate deception |
+| `corrected` | Author published accepted correction |
+| `retracted_by_author` | Author-initiated retraction |
+
+## Policy (Bridge-Backed)
+
+<Note>
+Policy objects are currently served via Bridge middleware. Direct Rust tuple decoding is being finalized. Use `/outlets/:slug` and `/capsules/:id` Bridge routes as the authoritative policy source.
+</Note>
+
+Default policy: **60% approval threshold, 5% quorum, 72-hour window** (259200 seconds).

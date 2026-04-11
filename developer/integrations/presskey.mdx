@@ -1,0 +1,216 @@
+---
+title: PressKey Integration
+description: Architecture, nonce challenge flow, EIP-1193 provider, and the WordPress security boundary.
+icon: key
+---
+
+## Architecture
+
+PressKey is the mandatory identity and signing layer for all write actions. It runs at `key.presschain.io` as a browser extension.
+
+```
+Your App
+   │
+   │ window.presskey.request({ action: "..." })
+   ▼
+PressKey Extension (local)
+   │ Signs with private key — never leaves device
+   ▼
+Returns: { signature, sessionToken, address }
+   │
+   ▼
+Your App forwards to Bridge API
+   │ Authorization: Bearer <sessionToken>
+   ▼
+Bridge verifies signature + role status → accepts or rejects
+```
+
+**Private keys never transit the network. Ever.**
+
+## Checking Availability
+
+```typescript
+const isPressKeyAvailable = (): boolean =>
+  typeof window !== "undefined" &&
+  typeof (window as any).presskey !== "undefined";
+
+// Or listen for the ready event
+window.addEventListener("message", (event) => {
+  if (event.data?.type === "PRESSKEY_EXTENSION") {
+    const { address, roles, balance, network } = event.data.payload;
+    console.log("PressKey ready:", address);
+  }
+});
+```
+
+## Core Request Pattern
+
+```typescript
+// window.presskey.request is the primary API
+const result = await window.presskey.request({
+  action: "CONNECT"
+});
+// → { address: "0x...", chainId: 77117002, network: "testnet" }
+
+const wallet = await window.presskey.request({ action: "GET_WALLET" });
+const chainId = await window.presskey.request({ action: "GET_CHAIN_ID" });
+
+// Sign a raw message
+const signed = await window.presskey.request({
+  action: "SIGN_MESSAGE",
+  message: "Authenticate with PressChain"
+});
+
+// Sign a transaction
+const tx = await window.presskey.request({
+  action: "SIGN_TRANSACTION",
+  tx: {
+    to: "0xContractAddress",
+    data: "0x...",
+    value: "0x0"
+  }
+});
+```
+
+## EIP-1193 Provider
+
+For direct ethers.js / viem integration:
+
+```typescript
+import { BrowserProvider } from "ethers";
+
+// PressKey injects an EIP-1193 provider
+const provider = new BrowserProvider((window as any).presskey);
+const signer = await provider.getSigner();
+
+// Sign transactions normally through PressKey
+const tx = await signer.sendTransaction({
+  to: CONTRACT_ADDRESS,
+  data: encodedCalldata,
+});
+```
+
+## Session Token Pattern
+
+Every write action needs a fresh session token from PressKey. Tokens expire — don't cache them for more than one action.
+
+```typescript
+async function voteCapsule(capsuleId: string, support: boolean) {
+  // 1. Get signature + fresh session token from PressKey
+  const { signature, sessionToken } = await window.presskey.request({
+    action: "SUBMIT_VOTE",
+    capsuleId,
+    support,
+  });
+
+  // 2. Forward to Bridge — token is single-use + short-lived
+  const res = await fetch(
+    `https://bridge.presschain.io/capsules/${capsuleId}/accept`,
+    {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${sessionToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ capsuleId, support, signature }),
+    }
+  );
+
+  return res.json();
+}
+```
+
+## Full Action Reference
+
+```typescript
+// Identity
+window.presskey.request({ action: "PING" })
+window.presskey.request({ action: "CONNECT" })
+window.presskey.request({ action: "GET_WALLET" })
+window.presskey.request({ action: "GET_CHAIN_ID" })
+
+// Signing
+window.presskey.request({ action: "SIGN_MESSAGE", message: string })
+window.presskey.request({ action: "SIGN_TRANSACTION", tx: object })
+
+// Capsule actions
+window.presskey.request({ action: "SUBMIT_CAPSULE", capsule: object })
+window.presskey.request({ action: "SUBMIT_SUPPORTING_CAPSULE", capsuleId: string, data: object })
+window.presskey.request({ action: "SUBMIT_DISPUTE", capsuleId: string, claims: array })
+window.presskey.request({ action: "SUBMIT_VOTE", capsuleId: string, support: boolean })
+
+// Role & outlet management
+window.presskey.request({ action: "GRANT_ROLE", role: number, outletSlug: string })
+window.presskey.request({ action: "VERIFY_OUTLET", outletSlug: string })
+window.presskey.request({ action: "LINK_DOMAIN", domain: string, outletSlug: string })
+```
+
+## PressKey Adapter Class
+
+```typescript
+export class PressKeyAdapter {
+  private _address: string | null = null;
+  public ready = false;
+
+  constructor() {
+    window.addEventListener("message", ({ data }) => {
+      if (data?.type === "PRESSKEY_EXTENSION") {
+        this._address = data.payload.address;
+        this.ready = true;
+      }
+    });
+  }
+
+  get address() { return this._address; }
+
+  async connect() {
+    const r = await window.presskey.request({ action: "CONNECT" });
+    this._address = r.address;
+    return r;
+  }
+
+  async vote(capsuleId: string, support: boolean) {
+    const { signature, sessionToken } = await window.presskey.request({
+      action: "SUBMIT_VOTE", capsuleId, support
+    });
+    return this._bridge(`/capsules/${capsuleId}/accept`, sessionToken, { capsuleId, support, signature });
+  }
+
+  async submitCapsule(capsule: object) {
+    const { signature, sessionToken } = await window.presskey.request({
+      action: "SUBMIT_CAPSULE", capsule
+    });
+    return this._bridge("/capsules/create", sessionToken, { ...capsule, signature });
+  }
+
+  private async _bridge(path: string, token: string, body: object) {
+    const res = await fetch(`https://bridge.presschain.io${path}`, {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    return res.json();
+  }
+}
+```
+
+## WordPress Security Boundary
+
+```
+WordPress PHP layer
+      │ Never handles keys. Never signs. Never calls RPC.
+      │ Only renders UI and forwards signed payloads.
+      ▼
+SYNC Plugin JS (browser context)
+      │ Calls window.presskey.request() in the journalist's browser
+      ▼
+PressKey Extension (journalist's browser)
+      │ Signs locally
+      ▼
+Returns { signature, sessionToken } to SYNC JS
+      │
+      ▼
+SYNC forwards to Bridge API via HTTPS
+```
+
+WordPress is never in the trust boundary. If WordPress is compromised, keys are safe.

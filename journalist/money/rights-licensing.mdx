@@ -1,0 +1,145 @@
+---
+title: Rights & Licensing
+description: How to earn from your canonical journalism — licensing, revenue splits, and the rights marketplace.
+icon: copyright
+---
+
+## Rights Are Built Into the Protocol
+
+On most platforms, licensing your journalism means emailing someone, negotiating a number, signing a PDF, and waiting for a check. On PressChain, rights licensing is native to the protocol. Once your Capsule is canonical, it's automatically eligible for the Rights Marketplace.
+
+<Info>
+Only **accepted (canonical) Capsules** can be licensed. Pending or rejected Capsules are not eligible.
+</Info>
+
+---
+
+## Real Scenario: The Tribune's Investigative Piece Goes National
+
+Maya's environmental investigation — *Toxic Runoff Found Near City Wetland* — was accepted on PressChain. The story has a **Verified** integrity label after surviving a legal challenge from the city.
+
+Three months later, a national newspaper wants to republish it.
+
+### Without PressChain
+
+The national paper emails The Bay Tribune's editor. Negotiation takes a week. Someone argues about the price. A contract PDF gets signed. Payment arrives six weeks later via wire transfer. Maya gets her cut at her next paycheck — if the accounting is correct.
+
+### With PressChain
+
+The national paper visits `rights.presschain.io`. They find Maya's Capsule. The Tribune has it listed at **500 PRESS** for a Standard Commercial license. They click **Purchase License**, connect their PressKey, and approve the transaction.
+
+Within 2 blocks (~4 seconds):
+
+- 15 PRESS protocol fee is split (validators, burn, vault, foundation)
+- 485 PRESS net reaches contributor wallets:
+  - Maya (70% / 7000 bps): **339.5 PRESS**
+  - Tribune editor (30% / 3000 bps): **145.5 PRESS**
+- The national paper receives a license token proving their right to republish
+- The entire transaction is on-chain, auditable, permanently recorded
+
+---
+
+## Setting Up Rights on Your Article
+
+<Steps>
+  <Step title="Enable rights on your outlet">
+    Portal → **Monetization** → **Rights** → Toggle ON
+
+    Set your default license template. This applies to all new accepted Capsules automatically.
+  </Step>
+  <Step title="Choose a license type for each Capsule">
+    After acceptance, open the Capsule in your Portal dashboard:
+
+    | Type | Best For |
+    |---|---|
+    | **Standard Commercial** | Syndication, republication in other outlets |
+    | **Editorial Only** | Non-commercial editorial use — no advertising |
+    | **Exclusive** | One buyer gets sole rights for a period |
+    | **Loaning** | Buyer can sub-license to third parties |
+  </Step>
+  <Step title="Set your price">
+    Enter the PRESS amount for a single license. The Portal shows comparable sales for similar articles in the network to help you price competitively.
+  </Step>
+  <Step title="Go live on the marketplace">
+    Your listing appears on `rights.presschain.io`. Buyers can find it by outlet, topic, date, and integrity label. A **Verified** label commands a premium — buyers trust court-validated journalism.
+  </Step>
+</Steps>
+
+---
+
+## Revenue Routing
+
+Every license purchase:
+
+```
+License Price: 1,000 PRESS
+      │
+      ├── 3% Protocol Fee (30 PRESS) routed:
+      │     50% → Author/Contributors
+      │     20% → Validators
+      │     10% → Burn
+      │     10% → Vault Operators
+      │     10% → Foundation
+      │
+      └── 97% Net (970 PRESS) → split by shareBps:
+            Author  (7000 bps): 679 PRESS
+            Editor  (3000 bps): 291 PRESS
+```
+
+Settlement is automatic. Instant. No waiting. No middleman.
+
+---
+
+## Contributor Revenue Shares
+
+Revenue splits are set at Capsule submission in **basis points** (bps), out of 10,000:
+
+```
+Author:     7000 bps = 70%
+Editor:     2000 bps = 20%
+Researcher: 1000 bps = 10%
+Total:     10000 bps = 100%
+```
+
+You can have up to however many contributors you need. All splits must total 10,000 bps.
+
+These splits apply to **all** rights revenue from the Capsule — forever — automatically, on-chain.
+
+---
+
+## Rights and Integrity Labels
+
+| Label | Impact on Licensing |
+|---|---|
+| **Verified** | Premium pricing supported — highest buyer confidence |
+| **Clean** | Standard market pricing |
+| **Contested** | Visible with active dispute warning |
+| **Misleading** | Heavily discounted typical market pricing |
+| **Fraudulent** | Rights listing blocked pending governance review |
+
+A **Verified** label from surviving a court challenge is genuinely valuable in the marketplace. It signals your journalism held up under formal scrutiny.
+
+---
+
+## Viewing Your Revenue
+
+Portal → **Monetization** → **Settlement Reports**
+
+Shows:
+- Total rights revenue per Capsule
+- Per-contributor payout breakdown
+- All settlement transactions with on-chain links
+- Active listings and pending licenses
+
+---
+
+## Practical Pricing Guide
+
+| Story Type | Suggested Range |
+|---|---|
+| Local news, standard reporting | 50–150 PRESS |
+| Regional investigative piece | 200–500 PRESS |
+| National impact investigation | 500–2,000 PRESS |
+| Breaking exclusive, verified by court | 1,000–5,000 PRESS |
+
+These are rough market estimates. The Protocol doesn't cap or floor your pricing — it's entirely your call.

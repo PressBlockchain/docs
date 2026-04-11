@@ -9,9 +9,51 @@
   },
   "favicon": "https://presschain.io/press-logo.png",
   "colors": {
-    "primary": "#009BF9"
+    "primary": "#009BF9",
+    "light": "#38B6FF",
+    "dark": "#002A43"
+  },
+  "topbar": {
+    "links": [
+      {
+        "name": "Explorer",
+        "url": "https://explorer.presschain.io"
+      },
+      {
+        "name": "Status",
+        "url": "https://status.presschain.io"
+      }
+    ],
+    "cta": {
+      "name": "Open Portal →",
+      "url": "https://portal.presschain.io"
+    }
   },
   "navigation": {
+    "global": {
+      "anchors": [
+        {
+          "anchor": "GitHub",
+          "href": "https://github.com/presslabs",
+          "icon": "github"
+        },
+        {
+          "anchor": "Bridge API",
+          "href": "https://bridge.presschain.io/health",
+          "icon": "webhook"
+        },
+        {
+          "anchor": "Faucet",
+          "href": "https://faucet.presschain.io",
+          "icon": "droplet"
+        },
+        {
+          "anchor": "Support",
+          "href": "mailto:support@presschain.io",
+          "icon": "envelope"
+        }
+      ]
+    },
     "tabs": [
       {
         "tab": "Home",
@@ -133,31 +175,23 @@
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "GitHub",
-          "href": "https://github.com/presslabs"
-        },
-        {
-          "anchor": "Bridge API",
-          "href": "https://bridge.presschain.io/health"
-        },
-        {
-          "anchor": "Faucet",
-          "href": "https://faucet.presschain.io"
-        },
-        {
-          "anchor": "Support",
-          "href": "mailto:support@presschain.io"
-        }
-      ]
-    }
+    ]
+  },
+  "css": "/_styles/custom.css",
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true,
+    "raiseIssue": true
+  },
+  "search": {
+    "prompt": "Search PressChain docs..."
+  },
+  "seo": {
+    "indexHiddenPages": false
   },
   "footer": {
     "socials": {
-      "x": "https://twitter.com/presschain_io",
+      "twitter": "https://twitter.com/presschain_io",
       "github": "https://github.com/presslabs"
     }
   }

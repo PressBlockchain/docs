@@ -1,0 +1,175 @@
+---
+title: Penalties & Consequences
+description: What triggers penalties on PressChain, the consequence ladder, and how to recover.
+icon: triangle-exclamation
+---
+
+## The Principle: Penalties Follow Process
+
+PressChain penalties are never discretionary. No individual, company, or organization can penalize you because they dislike your reporting, your political angle, or your outlet's editorial position.
+
+Every penalty flows from one of three sources:
+1. A court verdict (juror-determined, process-driven)
+2. Automated contract logic (non-response deadlines, bond minimums)
+3. A governance proposal that passed full public vote
+
+This is the protocol's core accountability guarantee: you can be penalized for deliberate misconduct — but never for simply doing journalism that someone powerful dislikes.
+
+---
+
+## Real Scenario: What Happens When Things Go Wrong
+
+### Scenario A — The Non-Response (Most Common)
+
+David Okafor, editor at The Bay Tribune, published a local government piece. A city official challenges one specific claim through PressChain Court. David gets a summons.
+
+He's traveling and misses the notification for 4 days — past the response deadline.
+
+**What happens automatically:**
+- Default judgment issued on the disputed claim
+- Minor bond penalty applied to David's Reporter bond
+- Reputation score reduced by ~0.2 points
+- No distribution downgrade for a first offense
+
+David logs into Portal, sees the default judgment, responds immediately to the ongoing case, and submits his evidence. The case continues from the evidence window onward — but he can't undo the non-response penalty for missing the summons.
+
+**Lesson:** Check the court section of your Portal regularly. Set up the notification email. Respond to every summons within 24 hours, even if just to acknowledge it.
+
+---
+
+### Scenario B — Misleading Content Finding
+
+A reporter at an outlet submits a Capsule with factually accurate statistics presented in a context that implies something the numbers don't actually support. A juror panel reviews the evidence and votes 5-2 that the presentation is misleading.
+
+**What happens:**
+- Capsule labeled **Misleading** (permanent, on-chain)
+- Reporter's reputation score reduced by ~0.35 points
+- Outlet's distribution tier reviewed (no immediate change for a single finding)
+- No bond slashing (misleading ≠ fraudulent)
+
+The reporter publishes a correction Capsule addressing the court's finding. The correction passes acceptance. The original stays on record as Misleading, but the corrected version becomes authoritative.
+
+---
+
+### Scenario C — Fraudulent Finding (Severe)
+
+A court case finds that a Capsule contained fabricated quotes attributed to a source that didn't exist.
+
+**What happens automatically:**
+- Capsule labeled **Fraudulent** (permanent)
+- Bond slashing executed by BondManager contract (30–100% depending on severity)
+- Major reputation reduction (~0.8+ points)
+- Distribution tier downgrade for the outlet
+- Role suspension possible if bond drops below minimum
+
+The journalist must top up their bond to restore their role. Recovery takes 6–12 months of sustained good-faith participation. The Fraudulent label is permanent — it's part of the public record forever.
+
+---
+
+## Penalty Reference Table
+
+| Trigger | Type | Severity |
+|---|---|---|
+| Court: Misleading verdict | Reputation reduction | Medium |
+| Court: Fraudulent verdict | Bond slash + major reputation hit | Severe |
+| Summons non-response (first) | Default judgment + minor bond penalty | Medium |
+| Summons non-response (second) | Escalated penalty + reputation reduction | High |
+| Summons non-response (third+) | Major slash + role suspension trigger | Very High |
+| Juror non-participation when selected | Juror bond penalty | Medium |
+| Frivolous dispute (baseless challenge) | Dispute bond forfeiture | Medium |
+| Domain verification lapse | Publishing paused (not a slash) | Low |
+| Bond below minimum | Role suspended until topped up | Low |
+| Spam voting detected | Reputation reduction + rate limiting | Medium |
+| Press Network feed disabled | Brand Separation Fee + downgrade | Medium |
+
+---
+
+## The Non-Response Ladder
+
+Non-response is the most common issue. The consequences escalate deliberately:
+
+<Steps>
+  <Step title="First non-response">
+    Default judgment. Minor bond penalty. Reputation reduction. The case continues from the evidence window — you can still participate, just without the initial response advantage.
+  </Step>
+  <Step title="Second non-response (different case)">
+    Escalated bond penalty (higher percentage). Compounding reputation reduction. Distribution tier downgrade triggered.
+  </Step>
+  <Step title="Third non-response">
+    Major bond slash. Role suspension initiated. Permanent public log entry on-chain.
+  </Step>
+  <Step title="Repeated pattern">
+    Governance review triggered. Potential permanent role disqualification. Outlet-level consequences if the pattern is organization-wide.
+  </Step>
+</Steps>
+
+<Warning>
+Always respond to court summons within 24 hours — even if just to say "Acknowledged. We are preparing our response." A simple acknowledgment stops the non-response clock. Silence is not a strategy.
+</Warning>
+
+---
+
+## Bond Slash Amounts
+
+Slash percentages are determined by the court case and applied automatically:
+
+| Court Verdict | Approximate Slash Range |
+|---|---|
+| Misleading (non-willful) | 0% — no slash |
+| Misleading (willful/pattern) | 5–15% of bonded amount |
+| Fraudulent | 30–100% of bonded amount |
+
+Slashed tokens are split between the Integrity Treasury, the complaining party (partial — incentivizes legitimate disputes), and the burn pool.
+
+---
+
+## What Cannot Happen
+
+To be clear about what the protocol prevents:
+
+- ❌ The Foundation cannot penalize you for your editorial position
+- ❌ A powerful advertiser cannot trigger penalties through pressure
+- ❌ Losing a court case as the defending party (when found misleading) does not cause bond slashing by default
+- ❌ Low acceptance rates are not penalized directly — only through natural distribution tier effects
+- ❌ The Council cannot override court verdicts or apply arbitrary penalties
+
+---
+
+## How to Recover
+
+### After a Reputation Hit
+
+Reputation recovers through consistent good-faith participation:
+- Vote regularly and honestly
+- Respond promptly to any court summons
+- Publish work that passes acceptance
+- Participate as a Juror when selected
+
+Minor hits (0.1–0.3 points) recover within weeks of active participation. Major hits from fraud findings take 6–12 months.
+
+### After a Bond Slash
+
+1. Check Portal → **Roles** → see how much was slashed and why
+2. Top up your bond to restore above the minimum
+3. Role reactivates immediately after top-up
+4. Bond stability clock doesn't reset to zero but reflects the penalty period
+
+### After Role Suspension
+
+1. Resolve the underlying issue (top up bond, respond to court case)
+2. Portal shows the specific resolution required
+3. Role reactivates automatically once requirements are met
+4. No additional waiting period beyond resolution itself
+
+---
+
+## Appealing a Penalty
+
+Court-applied penalties can be appealed through governance:
+
+1. Go to [proposals.presschain.io](https://proposals.presschain.io)
+2. Submit an appeal proposal with the case ID and new evidence
+3. Lock an appeal bond (forfeited if rejected)
+4. Governance votes on whether to re-open the case
+
+Appeals require **genuinely new evidence** — not a disagreement with the verdict. The bar is intentionally high to prevent the appeals process from becoming a delay tactic.

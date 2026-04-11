@@ -1,0 +1,154 @@
+---
+title: Register Your Newsroom
+description: How to bring your news outlet onto PressChain — fees, bonds, and what unlocks after onboarding.
+icon: building-columns
+---
+
+## Who This Is For
+
+This guide is for **editors, publishers, and outlet owners** who want to register their news organization on PressChain. Individual journalists can participate without an outlet, but to publish Capsules under your newsroom's brand and access the full distribution network, you need an outlet registration.
+
+---
+
+## Real Scenario: The Tribune Comes to PressChain
+
+*The Bay Tribune* is a 30-year-old regional newspaper with a digital edition. Their editor-in-chief, David Okafor, wants to establish the Tribune's canonical journalism record on PressChain and open up rights licensing for their investigative work.
+
+Here's how David onboards The Tribune.
+
+---
+
+## What Onboarding Requires
+
+<Warning>
+Outlet onboarding requires a serious economic commitment. This is intentional — it prevents spam outlets and ensures every organization has real accountability backing.
+</Warning>
+
+| Item | Amount | What It Is |
+|---|---|---|
+| **Onboarding fee** | 25,000 PRESS | One-time admission fee (consumed) |
+| **Required bond** | 250,000 PRESS | Locked collateral — returned when outlet closes |
+| **Total needed** | 275,000 PRESS | |
+
+The bond is not a fee. It's collateral. If The Tribune maintains good standing — no serious court misconduct findings — the bond stays in their control and is returned if they ever close their account.
+
+---
+
+## Step by Step
+
+<Steps>
+  <Step title="Prepare your PRESS">
+    David needs 275,000 PRESS. On testnet, these are free tPRESS from the faucet. On mainnet, acquire PRESS through `swap.presschain.io`.
+
+    He also needs PressKey installed with the outlet admin wallet loaded.
+  </Step>
+  <Step title="Go to Portal → Register Outlet">
+    David visits `portal.presschain.io` → **Outlet** → **Register New Outlet**.
+
+    He fills in:
+    - **Outlet name:** The Bay Tribune
+    - **Outlet slug:** `the-bay-tribune` *(permanent — choose carefully)*
+    - **Domain:** `baytribune.com`
+    - **Outlet wallet:** The controlling wallet address
+
+    <Warning>
+    The outlet slug is permanent. It appears in all Capsule IDs, API calls, and distribution feeds. Once set, it cannot be changed.
+    </Warning>
+  </Step>
+  <Step title="Pay fee and lock bond">
+    PressKey opens two approval prompts:
+    1. Approve 25,000 PRESS spend (onboarding fee)
+    2. Approve 250,000 PRESS bond lock
+
+    Both transactions confirm on-chain. David's Portal dashboard updates to show the outlet in "Pending Verification" state.
+  </Step>
+  <Step title="Verify the domain">
+    After payment confirms, David gets a verification token in the Portal. He adds a DNS TXT record to baytribune.com's DNS:
+
+    ```
+    Type:  TXT
+    Host:  @
+    Value: presschain-verify=abc123...
+    ```
+
+    Once the TXT record propagates, he clicks **Verify** in the Portal. [Full domain guide →](/journalist/outlets/domain-verification)
+  </Step>
+  <Step title="Configure the publishing workflow">
+    David chooses:
+    - **Auto-stage all posts** — every new article creates a Capsule draft automatically
+    - **WordPress SYNC** — connects their WordPress install to PressChain
+
+    [WordPress guide →](/journalist/outlets/wordpress-guide)
+  </Step>
+  <Step title="Add journalists">
+    David adds his reporters and editors to the outlet:
+    - Each journalist installs PressKey
+    - David assigns their role (Reporter, Editor, etc.)
+    - Each journalist bonds their role
+
+    Journalists can also be added to specific Capsules as contributors with defined revenue shares.
+  </Step>
+  <Step title="Enable modules">
+    Required:
+    - **Press Network feed** — must be active on the Tribune's site (mandatory)
+
+    Optional:
+    - Voting widget on article pages
+    - Canonical integrity badge
+    - Rights licensing
+    - Ad marketplace
+  </Step>
+</Steps>
+
+---
+
+## What Unlocks After Onboarding
+
+<CardGroup cols={2}>
+  <Card title="Publishing" icon="pen" color="#009BF9">
+    Submit Capsules under the Tribune brand. View staged queue, acceptance probability simulation, vote progress.
+  </Card>
+  <Card title="Distribution" icon="broadcast-tower" color="#009BF9">
+    Access to the Press Network, topic channels, regional channels, and language channels. Distribution tier based on acceptance rate.
+  </Card>
+  <Card title="Import Tools" icon="download" color="#002A43">
+    One-time RSS import of the Tribune's entire article archive. Continuous sync for new articles.
+  </Card>
+  <Card title="Revenue" icon="circle-dollar-sign" color="#002A43">
+    Rights licensing, ad marketplace, settlement reports. All revenue routes automatically.
+  </Card>
+  <Card title="Compliance" icon="file-export" color="#009BF9">
+    Legal proof bundles, Capsule lineage exports, vote breakdowns, court outcome reports.
+  </Card>
+  <Card title="Analytics" icon="chart-line" color="#002A43">
+    Acceptance rates, integrity score, distribution reach, rights revenue by article.
+  </Card>
+</CardGroup>
+
+---
+
+## Outlet Status
+
+Your outlet can be in these states:
+
+| Status | Meaning |
+|---|---|
+| `active` | Fully operational |
+| `domain_suspended` | DNS verification lapsed — publishing paused |
+| `bond_insufficient` | Bond dropped below minimum — operations paused |
+| `court_restricted` | Court order restricting operations |
+
+If the Tribune's domain verification lapses (say, after a DNS migration), David gets an alert in the Portal. He re-adds the TXT record, re-verifies, and after a 24-hour stabilization window the outlet is back to active.
+
+---
+
+## The Mandatory Press Network Module
+
+Every PressHash outlet must display the Press Network feed — a module showing recently accepted Capsules from across the network. It's non-intrusive (sidebar or footer), but it is required.
+
+Disabling it triggers:
+- A Brand Separation Fee (PRESS charge)
+- A distribution tier downgrade
+- A permanent public log entry
+
+This is an enforcement mechanism. Outlets that benefit from the network must contribute to its visibility.

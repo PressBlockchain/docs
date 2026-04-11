@@ -1,0 +1,141 @@
+---
+title: Disputes & Court
+description: What happens when your journalism is challenged — and why process is better than deletion.
+icon: gavel
+---
+
+## The Court Engine
+
+When someone challenges your reporting on PressChain, it doesn't go to a platform's trust-and-safety team. It doesn't go to your editor. It doesn't result in a takedown notice.
+
+It goes to the **Court engine** — a structured, on-chain dispute resolution process with specific claims, evidence windows, bonded jurors, and a permanent outcome.
+
+<Info>
+Court replaces censorship with process. Your article is never simply removed because someone complained. The outcome of every case — verdict, evidence reviewed, integrity label — is permanently public.
+</Info>
+
+---
+
+## Real Scenario: Elena's Campaign Finance Story
+
+Elena Santos is a political correspondent who published an investigation into improper campaign fund routing. The campaign's legal team files a formal challenge through PressChain Court.
+
+Here's what happens:
+
+### The Challenge Is Filed
+
+The campaign's attorney goes to `court.presschain.io` and files a dispute against Elena's Capsule. They must:
+- Identify **which specific claims** they're contesting (not just "the whole article is wrong")
+- State the **type of dispute** (factual inaccuracy, misleading context, fabricated source)
+- Submit their **initial evidence**
+- Lock a **dispute bond** (10 PRESS) — this is forfeited if the dispute is found to be baseless
+
+The attorney targets two specific claims:
+1. *"[Confirmed] Campaign routed $84,000 through a shell LLC"*
+2. *"[Reporting] This violates Section 4.2 of the Campaign Finance Act"*
+
+### Elena Receives a Summons
+
+Elena gets an on-chain summons automatically. She has a fixed deadline to respond.
+
+<Warning>
+**Non-response is not an option.** Failing to respond by the deadline triggers automatic default judgment, bond penalties, and reputation reduction. Even a brief acknowledgment ("I'm aware and preparing my response") is enough to avoid the non-response penalty.
+</Warning>
+
+Elena responds immediately: "I acknowledge the summons. I am preparing my evidence response."
+
+### The Evidence Window
+
+Both sides have a fixed window to submit evidence. Elena submits:
+- The original LLC incorporation records (archived government page)
+- Bank transfer records her source provided
+- Text of Section 4.2 with legal analysis
+- The original EPA [sic - campaign finance commission] filing
+
+The campaign submits their rebuttal evidence. The window closes at a fixed time — no extensions.
+
+### Juror Selection
+
+A panel of bonded Jurors is randomly selected from the eligible pool. These are people who have locked a Juror bond — economic commitment to showing up. They cannot refuse selection. If they don't participate, they face bond penalties.
+
+Jurors review:
+- Elena's original Capsule and evidence
+- The campaign's dispute and evidence
+- The specific claims being contested
+
+### Deliberation and Verdict
+
+After deliberation, jurors vote on each contested claim:
+- **Claim 1 (shell LLC routing):** Jurors find Elena's evidence sufficient — claim upheld
+- **Claim 2 (Section 4.2 violation):** Jurors find the legal analysis overstated — claim marked misleading
+
+### Integrity Label Applied
+
+The result is a **permanent integrity label** on Elena's Capsule:
+
+> **Partially Verified** — Core financial claims confirmed. Legal analysis finding: Misleading in scope of statutory violation.
+
+Elena's original Capsule is labeled. She publishes a correction Capsule addressing the legal analysis. The correction goes through acceptance. The full chain is permanently visible.
+
+---
+
+## Integrity Labels
+
+| Label | What It Means |
+|---|---|
+| **Verified** | Court confirmed the content's accuracy |
+| **Clean** | No disputes — standard canonical state |
+| **Contested** | Active dispute in progress |
+| **Unresolved** | Court concluded without a clear verdict |
+| **Misleading** | Court found material inaccuracy or omission |
+| **Fraudulent** | Court found deliberate deception |
+| **Corrected** | Author published an accepted correction |
+| **Retracted by Author** | Author-initiated retraction |
+
+Labels are permanent. They're visible on your article page, in the Explorer, in the Press Network feed, and in the Rights Marketplace. A **Verified** label is actually a powerful signal — it means your journalism survived a structured challenge.
+
+---
+
+## What To Do If You're Challenged
+
+<Steps>
+  <Step title="Respond to the summons immediately">
+    Check `portal.presschain.io` → **Court Cases** regularly. When a summons arrives, respond within 24 hours even if just to acknowledge it. The response deadline is firm.
+  </Step>
+  <Step title="Review the specific claims being disputed">
+    The dispute targets specific structured claims. Read them carefully. This tells you exactly what you need to defend.
+  </Step>
+  <Step title="Gather targeted evidence">
+    You don't need to re-prove your entire article — just the disputed claims. Find every piece of evidence that directly addresses those specific assertions.
+  </Step>
+  <Step title="Submit through court.presschain.io">
+    Submit your evidence response through the Court portal. Evidence is hash-committed. You can submit multiple items before the evidence window closes.
+  </Step>
+  <Step title="Wait for deliberation">
+    Jurors review everything. You don't need to do anything during this phase. If jurors have questions, you'll receive a formal request through the court system.
+  </Step>
+</Steps>
+
+---
+
+## Filing a Dispute Against Another Outlet
+
+If you believe another canonical article is inaccurate:
+
+1. Visit [court.presschain.io](https://court.presschain.io)
+2. Find the Capsule ID
+3. Identify the specific claims you're challenging
+4. Submit your evidence and dispute type
+5. Lock your dispute bond (10 PRESS)
+
+<Warning>
+If jurors find your dispute baseless or frivolous, your 10 PRESS bond is forfeited. This is intentional — frivolous challenges have a cost.
+</Warning>
+
+---
+
+## The Court Is Public
+
+Every case, every evidence submission, every juror vote outcome, every integrity label is permanently public. You can browse the full court docket at [court.presschain.io](https://court.presschain.io).
+
+This transparency is the foundation of trust. No case can be hidden. No verdict can be erased. The integrity record of journalism is as permanent as the journalism itself.

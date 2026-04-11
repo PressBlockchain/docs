@@ -1,0 +1,189 @@
+---
+title: PressKey Events
+description: Full event matrix, window.presskey API, nonce challenge flow, and integration patterns.
+icon: key
+---
+
+## window.presskey API
+
+PressKey exposes a typed request interface on the window object:
+
+```typescript
+// Core request pattern
+window.presskey.request({ action: "ACTION_NAME", ...params })
+
+// All confirmed actions:
+window.presskey.request({ action: "PING" })
+window.presskey.request({ action: "CONNECT" })
+window.presskey.request({ action: "GET_WALLET" })
+window.presskey.request({ action: "GET_CHAIN_ID" })
+window.presskey.request({ action: "SIGN_MESSAGE", message: "..." })
+window.presskey.request({ action: "SIGN_TRANSACTION", tx: {...} })
+window.presskey.request({ action: "SUBMIT_CAPSULE", capsule: {...} })
+window.presskey.request({ action: "SUBMIT_SUPPORTING_CAPSULE", capsuleId: "...", data: {...} })
+window.presskey.request({ action: "SUBMIT_DISPUTE", capsuleId: "...", claims: [...] })
+window.presskey.request({ action: "SUBMIT_VOTE", capsuleId: "...", support: true })
+window.presskey.request({ action: "GRANT_ROLE", role: 2, outletSlug: "..." })
+window.presskey.request({ action: "VERIFY_OUTLET", outletSlug: "..." })
+window.presskey.request({ action: "LINK_DOMAIN", domain: "...", outletSlug: "..." })
+```
+
+## Nonce Challenge Flow
+
+Every write action:
+
+```
+App → request nonce from API Gateway
+              │
+              ▼
+        Gateway issues nonce (single-use, 30s expiry)
+              │
+              ▼
+    PressKey signs nonce locally (key never leaves device)
+              │
+              ▼
+    PressKey returns { signature, sessionToken, address }
+              │
+              ▼
+    App forwards signed payload to Bridge API
+              │
+              ▼
+    Gateway verifies → accepts or rejects
+```
+
+## postMessage Event Matrix
+
+PressKey also communicates via `window.postMessage`. All messages: `{ type: string, payload: object }`.
+
+### Inbound (App → PressKey)
+
+| Event | Purpose |
+|---|---|
+| `PRESSKEY_ALLOW_SITE` | Request site permission |
+| `PRESSKEY_REQUEST` | Request a signed action |
+| `PRESSKEY_FORWARD_RPC` | Forward RPC call through PressKey |
+| `PRESSKEY_RPC_REQUEST` | Direct RPC via injected provider |
+| `PRESSKEY_OPEN_BOND_APPROVAL` | Open bond approval UI |
+| `PRESSKEY_OPEN_CAPSULE_APPROVAL` | Open Capsule publish UI |
+| `PRESSKEY_OPEN_SEND_APPROVAL` | Open PRESS send UI |
+| `PRESSKEY_GET_PENDING_APPROVAL` | Query pending approvals |
+| `PRESSKEY_APPROVE_PENDING_APPROVAL` | Approve pending action |
+| `PRESSKEY_REJECT_PENDING_APPROVAL` | Reject pending action |
+| `PRESSKEY_REFRESH_TX_STATUS` | Refresh pending tx status |
+| `PRESSKEY_GET_LATEST_TX` | Fetch most recent tx |
+
+### Outbound (PressKey → App)
+
+| Event | Purpose |
+|---|---|
+| `PRESSKEY_EXTENSION` | Extension loaded and ready |
+| `PRESSKEY_PAGE` | Page-level state update |
+| `PRESS` | Token event (balance change, transfer) |
+| `FETCH_FAILED` | Proxied fetch failed |
+| `OFFCHAIN_FAULT` | Off-chain action failed |
+
+## Integration Example
+
+```typescript
+class PressKeyAdapter {
+  private address: string | null = null;
+  ready = false;
+
+  constructor() {
+    window.addEventListener("message", this.handle.bind(this));
+  }
+
+  private handle(e: MessageEvent) {
+    const { type, payload } = e.data ?? {};
+    if (type === "PRESSKEY_EXTENSION") {
+      this.address = payload.address;
+      this.ready = true;
+    }
+    if (type === "OFFCHAIN_FAULT") console.error("PressKey fault:", payload);
+    if (type === "FETCH_FAILED") console.error("PressKey fetch failed:", payload);
+  }
+
+  async connect(): Promise<string> {
+    const result = await window.presskey.request({ action: "CONNECT" });
+    this.address = result.address;
+    return result.address;
+  }
+
+  async vote(capsuleId: string, support: boolean) {
+    const { signature, sessionToken } = await window.presskey.request({
+      action: "SUBMIT_VOTE",
+      capsuleId,
+      support,
+    });
+
+    return fetch("https://bridge.presschain.io/capsules/:id/accept", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${sessionToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ capsuleId, support, signature }),
+    });
+  }
+
+  async submitCapsule(capsuleData: object) {
+    const { signature, sessionToken } = await window.presskey.request({
+      action: "SUBMIT_CAPSULE",
+      capsule: capsuleData,
+    });
+
+    return fetch("https://bridge.presschain.io/capsules/create", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${sessionToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ...capsuleData, signature }),
+    });
+  }
+}
+
+// Usage
+const pk = new PressKeyAdapter();
+await pk.connect();
+await pk.vote("247", true);
+```
+
+## Modal State Pattern
+
+Standard React state for PressKey-driven modals in portal apps:
+
+```typescript
+// From PressChainPortal_v8_admin_workflows.jsx pattern
+const [showCreateCapsuleModal, setShowCreateCapsuleModal] = useState(false);
+const [showRightsModal, setShowRightsModal] = useState(false);
+const [showDisputeModal, setShowDisputeModal] = useState(false);
+const [showRoleModal, setShowRoleModal] = useState(false);
+
+// Wallet state
+const [wallet, setWallet] = useState(null);
+const [walletConnected, setWalletConnected] = useState(false);
+const [latestTx, setLatestTx] = useState(null);
+const [chainId, setChainId] = useState(77117002);
+const [networkName, setNetworkName] = useState("PressChain Testnet");
+```
+
+## WordPress Security Model
+
+WordPress never handles keys. Ever.
+
+```
+WordPress PHP/JS
+      │
+      │  POST signed payload only
+      ▼
+API Gateway (rate limiting, nonce verify)
+      │
+      ▼
+Bridge API
+      │
+      ▼
+Protocol / Contracts
+```
+
+WordPress sees a web API. This is a hard rule — not a preference.

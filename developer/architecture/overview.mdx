@@ -1,0 +1,106 @@
+---
+title: Architecture Overview
+description: Domain separation, the full request chain, and why every layer exists.
+icon: sitemap
+---
+
+## The Core Constraint
+
+Every architectural decision flows from one principle: **the protocol must not appear — or actually be — controlled by any company.** Domain separation, service isolation, and the API gateway pattern all exist to preserve decentralization posture as the network matures.
+
+## Domain Separation
+
+<CardGroup cols={2}>
+  <Card title="presschain.io — Protocol Namespace" icon="globe" color="#009BF9">
+    Everything protocol-critical: RPC, canonical dApps, court, explorer, docs, bridge. Neutral, permanent, canonical. Over time, RPC load-balances across community operators without changing URLs.
+  </Card>
+  <Card title="presslabs.io — Steward Org" icon="building" color="#002A43">
+    Legal, disclosures, grants, validator node sales, careers. PressLabs does not host RPC or canonical dApps — this keeps the chain from looking corporate-controlled.
+  </Card>
+</CardGroup>
+
+## Full Request Chain
+
+```
+User Action (PressKey signs nonce locally)
+          │
+          ▼
+  Outlet App / dApp
+          │  HTTPS only · never raw RPC
+          ▼
+  API Gateway  ← rate limiting, nonce verify, replay protection
+          │
+          ▼
+  Bridge Middleware  ← normalizes chain data, manages session state
+          │
+          ▼
+  Protocol API (Rust)  ← indexer reads, capsule state, court engine
+          │
+          ▼
+  EVM Node  ← JSON-RPC, EVM execution
+          │
+          ▼
+  Smart Contracts  ← ArticleRegistry, CapsuleAcceptance, BondManager…
+```
+
+<Warning>
+WordPress and outlet apps sit at the very top. They see a controlled web API and never touch RPC directly. This is a hard security boundary — not a best practice, a rule.
+</Warning>
+
+## Service Components
+
+<AccordionGroup>
+  <Accordion title="EVM Node" icon="cube">
+    Geth-compatible execution layer. Produces blocks, enforces EVM execution, hosts JSON-RPC on internal ports 8545/8546 (mainnet) and 9545/9546 (testnet). Validators secure consensus. They do not decide what news is true.
+  </Accordion>
+  <Accordion title="Protocol API (Rust)" icon="gear">
+    Direct chain reader and state manager. Returns full Capsule objects including policy, outlet, content, evidence, contributors, and revision lineage. Policy objects are currently bridge-backed pending direct Rust getter finalization.
+  </Accordion>
+  <Accordion title="Bridge API" icon="webhook">
+    Node.js middleware at `bridge.presschain.io`. Requires Bearer auth for all write routes. Exposes normalized REST endpoints for outlet workflows, capsule submission, voting, and metadata. The stable integration surface for all non-validator development.
+  </Accordion>
+  <Accordion title="Indexer" icon="database">
+    Indexes chain events into PostgreSQL. Powers fast queries for capsule state, vote history, court cases, and distribution events. The Bridge reads from here for all normalized data — not directly from RPC.
+  </Accordion>
+  <Accordion title="BlockScout Explorer" icon="magnifying-glass">
+    Customized so the first-class object is the Capsule, not the transaction. Shows acceptance ratios, vote breakdowns, integrity labels, and revision lineage on each Capsule page.
+  </Accordion>
+  <Accordion title="Court Engine" icon="gavel">
+    Separate service on internal port 46103. Handles case lifecycle, summons issuance, juror selection, deliberation windows, verdict execution, and integrity label application. Interacts with BondManager for automatic penalty enforcement.
+  </Accordion>
+  <Accordion title="Burn Engine" icon="fire">
+    Runs on port 46105. Executes the 90-day burn cycle automatically, accumulating from publish fees, rights fees, ad fees, slashed bonds, and brand separation fees. Execution is on-chain and visible in explorer.
+  </Accordion>
+</AccordionGroup>
+
+## Protocol Namespace — All Surfaces
+
+```
+presschain.io namespace
+├── rpc.presschain.io           JSON-RPC HTTP (public)
+├── archive.rpc.presschain.io   Archive node RPC
+├── ws.presschain.io            WebSocket RPC
+├── bridge.presschain.io        Bridge API middleware
+├── portal.presschain.io        Outlet control plane  [port 3010]
+├── outlet.presschain.io        Outlet-facing app     [port 3011]
+├── key.presschain.io           PressKey identity wallet
+├── court.presschain.io         Court dApp            [port 3012]
+├── proposals.presschain.io     Governance            [port 3013]
+├── ads.presschain.io           Ad marketplace        [port 3014]
+├── status.presschain.io        Network telemetry     [port 3015]
+├── docs.presschain.io          This documentation    [port 3016]
+├── faucet.presschain.io        Testnet faucet        [port 3017]
+├── explorer.presschain.io      BlockScout (custom)
+└── swap.presschain.io          Token exchange
+```
+
+## Decentralization Roadmap
+
+| Phase | State |
+|---|---|
+| **Now** | Single-operator RPC, PoA consensus, community validators being onboarded |
+| **Phase 2** | Load-balance RPC across community operators, same URL |
+| **Phase 3** | Multi-validator consensus, Council authority narrows |
+| **Phase 4** | Protocol autonomous — PressLabs is one participant among many |
+
+The URL structure is designed so phase transitions happen under the hood without breaking integrations.

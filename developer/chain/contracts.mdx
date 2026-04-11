@@ -1,0 +1,175 @@
+---
+title: Contract Registry
+description: All deployed PressChain contract addresses, descriptions, and copy-paste TypeScript constants.
+icon: file-contract
+---
+
+<Info>
+All addresses are **Testnet (Chain ID 77117002)**. Verify current state at `https://bridge.presschain.io/contracts` or `https://bridge.presschain.io/meta/contracts-summary`.
+</Info>
+
+## Copy-Paste Constants
+
+```typescript
+// contracts.ts — import this everywhere
+export const CONTRACTS = {
+  // Article & Capsule
+  ArticleRegistry:    "0x121885Cd339BF495cbC63e0f49e16c7CB2A1C62a",
+  CapsuleAcceptance:  "0x63D0c0b51a3856a539b36a909517a18BddDb4a32",
+
+  // Outlet
+  OutletMembership:   "0x9084c7bE0F49b71f0eEa840C9c0A18F6321073fF",
+  OutletRegistry:     "0xA61490ab3126Cb792c1D7021395db396e4DC2652",
+  OutletFactory:      "0x83cBD17112bD2b38A7e3Db2Ecbb65756F8b614fD",
+  OutletRoleShop:     "0x4A9447E892bA3176ab7b4525CE38Ba4301ccC77D",
+
+  // Identity & Admin
+  FoundationAdmin:    "0xD0Eb1f5Fcb9EaE75507151299781e119D1AADCE3",
+  RoleManager:        "0xc7A978851835F619EE1DCc58D5C86bf9BEBF80C0",
+
+  // Source & Token
+  SourceRegistry:     "0x89116af6C8BfC297c4dA08aAEB005058A850422a",
+  tPRESS:             "0xe1cC4228c29cb4e1Ff4B836f445b7ee3FBb04e32",
+
+  // Bond
+  BondManager:        "0x4b39edF3fA0e7DBAFFA45FDCBbE08B6681D1076b",
+} as const;
+
+// Next.js env-based constants (for apps using the env schema)
+export const CONTRACTS_ENV = {
+  capsuleAcceptance:  process.env.NEXT_PUBLIC_CAPSULE_ACCEPTANCE_CONTRACT,
+  articleRegistry:    process.env.NEXT_PUBLIC_ARTICLE_REGISTRY_CONTRACT,
+  outletRegistry:     process.env.NEXT_PUBLIC_OUTLET_REGISTRY_CONTRACT,
+  rightsRegistry:     process.env.NEXT_PUBLIC_RIGHTS_REGISTRY_CONTRACT,
+  courtRegistry:      process.env.NEXT_PUBLIC_COURT_REGISTRY_CONTRACT,
+  roleManager:        process.env.NEXT_PUBLIC_ROLE_MANAGER_CONTRACT,
+  validatorRegistry:  process.env.NEXT_PUBLIC_VALIDATOR_REGISTRY_CONTRACT,
+  treasury:           process.env.NEXT_PUBLIC_TREASURY_CONTRACT,
+};
+```
+
+## Contract Descriptions
+
+### Article & Capsule Layer
+
+| Contract | Address | Purpose |
+|---|---|---|
+| **ArticleRegistry v3** | `0x121885...C62a` | Primary Capsule registry. Submit, query, and finalize. Every publishing integration starts here. |
+| **CapsuleAcceptance v2** | `0x63D0c0...a32` | Acceptance voting engine. Tracks weighted yes/no, quorum, finalization state. |
+
+### Outlet Layer
+
+| Contract | Address | Purpose |
+|---|---|---|
+| **OutletMembership** | `0x9084c7...73fF` | Outlet membership status, bond locks, onboarding state |
+| **OutletRegistry** | `0xA6149...652` | Outlet metadata, slug mapping, domain verification |
+| **OutletFactory** | `0x83cBD1...4fD` | Deploys new outlet instances via factory pattern |
+| **OutletRoleShop** | `0x4A944...77D` | Role purchases and bond management at outlet level |
+
+### Identity & Admin
+
+| Contract | Address | Purpose |
+|---|---|---|
+| **FoundationAdmin** | `0xD0Eb1...CE3` | Foundation deployer. Highest-privilege key. Protect carefully. |
+| **RoleManager** | `0xc7A97...C0` | Protocol-level role assignment and verification |
+
+### Source & Token
+
+| Contract | Address | Purpose |
+|---|---|---|
+| **SourceRegistry** | `0x89116...422a` | Source identity registry for journalists |
+| **tPRESS** | `0xe1cC4...e32` | Testnet PRESS token (ERC-20) |
+
+### Bond System
+
+| Contract | Address | Purpose |
+|---|---|---|
+| **BondManager** | `0x4b39...076b` | Role bond deposits, dissolution, role activation state |
+
+## Key BondManager Methods
+
+These are confirmed live methods on the deployed contract:
+
+```solidity
+// Get minimum bond for a role
+function minimumBondByRole(uint8 role) view returns (uint256)
+
+// Check if role is active for an address
+function isRoleActive(address wallet, uint8 role) view returns (bool)
+
+// Get full bond state
+function getRoleBond(address wallet, uint8 role) view returns (
+  uint8 role,
+  uint8 state,
+  uint256 bondedAmount,
+  uint256 minimumRequired,
+  uint256 activatedAt,
+  uint256 updatedAt
+)
+
+// Dissolution fee in basis points
+function dissolutionFeeBps() view returns (uint16)
+
+// Deposit bond (activates role)
+function depositBond(uint8 role) payable
+
+// Dissolve bond and exit role
+function dissolveBond(uint8 role)
+```
+
+## Role Encoding
+
+| Role | ID | Bond Required |
+|---|---|---|
+| Citizen | 0 | None |
+| Journalist | 1 | Low |
+| Reporter | 2 | Medium |
+| Editor | 3 | High |
+| Governance | 4 | High |
+| Foundation | 5 | — |
+
+## Bond Query Example
+
+```typescript
+import { Contract, JsonRpcProvider, formatUnits } from "ethers";
+import { CONTRACTS } from "./contracts";
+
+const ABI = [
+  "function isRoleActive(address, uint8) view returns (bool)",
+  "function getRoleBond(address, uint8) view returns (uint8, uint8, uint256, uint256, uint256, uint256)",
+  "function minimumBondByRole(uint8) view returns (uint256)",
+  "function dissolutionFeeBps() view returns (uint16)",
+];
+
+const provider = new JsonRpcProvider("https://rpc.presschain.io");
+const bond = new Contract(CONTRACTS.BondManager, ABI, provider);
+
+const REPORTER = 2;
+const wallet = "0xYOUR_ADDRESS";
+
+const active = await bond.isRoleActive(wallet, REPORTER);
+const [, , amount, , since] = await bond.getRoleBond(wallet, REPORTER);
+const feeBps = await bond.dissolutionFeeBps();
+
+console.log({
+  active,
+  bonded: formatUnits(amount, 18) + " PRESS",
+  activeSince: new Date(Number(since) * 1000).toLocaleDateString(),
+  dissolutionFee: feeBps / 100 + "%",
+});
+```
+
+## Live Contract Registry Endpoint
+
+```bash
+# All contracts with current addresses
+GET https://bridge.presschain.io/contracts
+
+# ABI for a specific contract
+GET https://bridge.presschain.io/abis/ArticleRegistry
+GET https://bridge.presschain.io/abis/CapsuleAcceptance
+GET https://bridge.presschain.io/abis/BondManager
+
+# Full environment summary
+GET https://bridge.presschain.io/meta/contracts-summary
+```

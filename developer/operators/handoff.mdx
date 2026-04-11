@@ -1,0 +1,163 @@
+---
+title: CTO Handoff / Recovery
+description: Full system recovery reference for incoming engineers or operators taking over PressChain infrastructure.
+icon: shield-check
+---
+
+<Warning>
+This page is operationally sensitive. The credentials section should only be accessed by authorized personnel. Change all secrets immediately on handoff.
+</Warning>
+
+## What You Are Taking Over
+
+PressChain is a sovereign EVM-compatible L1 with a journalism protocol layer. The stack:
+
+- Server `38.83.53.58` — all Next.js apps via systemd, Apache proxy
+- Static marketing site at `38.83.53.142` (Vite/React, cPanel)
+- An EVM node running PressChain consensus
+- Node.js Bridge API middleware
+- Mintlify docs at `/home/press/presschain-docs`
+- All services managed via `presschain-next@<name>` systemd units
+
+## Server Access
+
+```bash
+# App server (all dApps)
+ssh press@38.83.53.58
+# Or as root for systemctl
+ssh root@38.83.53.58
+
+# Marketing site / chain host
+ssh press@38.83.53.142
+```
+
+Add your SSH key before revoking previous access:
+```bash
+echo "ssh-rsa YOUR_PUBLIC_KEY" >> ~/.ssh/authorized_keys
+```
+
+## First Steps After Taking Over
+
+<Steps>
+  <Step title="Change admin credentials immediately">
+    Update Portal admin password, Bridge API key, and any shared secrets. Do this before anything else.
+  </Step>
+  <Step title="Rotate the Bridge API key">
+    ```bash
+    # Generate new key
+    openssl rand -hex 32
+
+    # Update on server
+    nano /home/press/presschain-bridge/.env
+    # Set BRIDGE_API_KEY=new_key
+
+    # Restart Bridge
+    sudo systemctl restart presschain-bridge
+    # or PM2: pm2 restart presschain-bridge
+
+    # Update all consumers (SYNC plugin, portal env, etc.)
+    ```
+  </Step>
+  <Step title="Verify full stack health">
+    ```bash
+    bash /home/press/presschain-health.sh
+    # (or run the health check commands from Troubleshooting)
+    ```
+  </Step>
+  <Step title="Verify contract addresses">
+    ```bash
+    curl https://bridge.presschain.io/contracts | python3 -m json.tool
+    # Cross-reference with contract registry docs
+    ```
+  </Step>
+</Steps>
+
+## Key File Locations
+
+```bash
+# App monorepo
+/home/press/PressChain
+/home/press/PressChain/apps/portal
+/home/press/PressChain/apps/portal/app/page.tsx
+/home/press/PressChain/apps/portal/PressChainPortal_v8_admin_workflows.jsx
+
+# Docs (Mintlify)
+/home/press/presschain-docs
+
+# Static marketing site (Vite)
+/home/press/presschain-site
+/home/press/presschain-site/src/App.jsx
+
+# Apache proxy configs
+/etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/portal.presschain.io/proxy.conf
+/etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/court.presschain.io/proxy.conf
+/etc/apache2/conf.d/userdata/ssl/2_4/pcpressroot/status.presschain.io/proxy.conf
+```
+
+## Contract Addresses (Quick Reference)
+
+```
+ArticleRegistry:    0x121885Cd339BF495cbC63e0f49e16c7CB2A1C62a
+CapsuleAcceptance:  0x63D0c0b51a3856a539b36a909517a18BddDb4a32
+OutletMembership:   0x9084c7bE0F49b71f0eEa840C9c0A18F6321073fF
+OutletRegistry:     0xA61490ab3126Cb792c1D7021395db396e4DC2652
+OutletFactory:      0x83cBD17112bD2b38A7e3Db2Ecbb65756F8b614fD
+OutletRoleShop:     0x4A9447E892bA3176ab7b4525CE38Ba4301ccC77D
+FoundationAdmin:    0xD0Eb1f5Fcb9EaE75507151299781e119D1AADCE3
+RoleManager:        0xc7A978851835F619EE1DCc58D5C86bf9BEBF80C0
+SourceRegistry:     0x89116af6C8BfC297c4dA08aAEB005058A850422a
+tPRESS:             0xe1cC4228c29cb4e1Ff4B836f445b7ee3FBb04e32
+BondManager:        0x4b39edF3fA0e7DBAFFA45FDCBbE08B6681D1076b
+```
+
+## Known Technical Debt
+
+| Item | Status | Notes |
+|---|---|---|
+| Rust policy direct getter | In progress | Tuple decoding being finalized. Use Bridge as source of truth. |
+| Mainnet genesis | Protocol design | Chain ID 77117001 defined, not yet live |
+| Community validators | Phase 2 | Single-operator now. Architecture supports multi-validator. |
+| Rights marketplace UI | Protocol design | Routes exist in Bridge, UI in progress |
+| Ads marketplace | Protocol design | Architecture specified |
+
+## Full Recovery Sequence (Complete Outage)
+
+```bash
+# 1. Verify you're on the right server
+hostname; whoami
+
+# 2. Check what services exist
+systemctl list-units | grep presschain
+
+# 3. Start all app services
+for s in portal outlet court proposals ads status docs faucet; do
+  sudo systemctl start presschain-next@$s
+  echo "Started: $s"
+done
+
+# 4. Verify each
+for s in portal outlet court proposals ads status docs faucet; do
+  echo "$s: $(systemctl is-active presschain-next@$s)"
+done
+
+# 5. Restart Apache (for proxy)
+/scripts/rebuildhttpdconf && /scripts/restartsrv_httpd
+
+# 6. Verify public access
+for url in portal court status docs faucet; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" https://$url.presschain.io)
+  echo "$url.presschain.io: $code"
+done
+```
+
+## Ongoing Responsibilities
+
+| Task | Frequency |
+|---|---|
+| Check all service status | Daily |
+| Review Bridge logs for errors | Daily |
+| Monitor court backlog | Weekly |
+| Rotate Bridge API key | Monthly |
+| Verify burn engine ran | Every 90 days |
+| Database / chain backup verify | Weekly |
+| Ownership audit (`chown -R press:press`) | After any root operation |

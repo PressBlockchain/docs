@@ -17,70 +17,121 @@ window.presskey.request({ action: "PING" })
 window.presskey.request({ action: "CONNECT" })
 window.presskey.request({ action: "GET_WALLET" })
 window.presskey.request({ action: "GET_CHAIN_ID" })
-window.presskey.request({ action: "SIGN_MESSAGE", message: "..." })
+window.presskey.request({ action: "SIGN_MESSAGE",   message: "..." })
 window.presskey.request({ action: "SIGN_TRANSACTION", tx: {...} })
-window.presskey.request({ action: "SUBMIT_CAPSULE", capsule: {...} })
+window.presskey.request({ action: "SUBMIT_CAPSULE",  capsule: {...} })
 window.presskey.request({ action: "SUBMIT_SUPPORTING_CAPSULE", capsuleId: "...", data: {...} })
-window.presskey.request({ action: "SUBMIT_DISPUTE", capsuleId: "...", claims: [...] })
-window.presskey.request({ action: "SUBMIT_VOTE", capsuleId: "...", support: true })
-window.presskey.request({ action: "GRANT_ROLE", role: 2, outletSlug: "..." })
-window.presskey.request({ action: "VERIFY_OUTLET", outletSlug: "..." })
-window.presskey.request({ action: "LINK_DOMAIN", domain: "...", outletSlug: "..." })
+window.presskey.request({ action: "SUBMIT_DISPUTE",  capsuleId: "...", claims: [...] })
+window.presskey.request({ action: "SUBMIT_VOTE",     capsuleId: "...", support: true })
+window.presskey.request({ action: "GRANT_ROLE",      role: 2, outletSlug: "..." })
+window.presskey.request({ action: "VERIFY_OUTLET",   outletSlug: "..." })
+window.presskey.request({ action: "LINK_DOMAIN",     domain: "...", outletSlug: "..." })
 ```
 
 ## Nonce Challenge Flow
 
-Every write action:
+Every write action follows this path:
 
 ```
-App → request nonce from API Gateway
-              │
-              ▼
-        Gateway issues nonce (single-use, 30s expiry)
-              │
-              ▼
-    PressKey signs nonce locally (key never leaves device)
-              │
-              ▼
-    PressKey returns { signature, sessionToken, address }
-              │
-              ▼
-    App forwards signed payload to Bridge API
-              │
-              ▼
-    Gateway verifies → accepts or rejects
+App requests action
+        |
+        v
+API Gateway issues nonce (single-use, 30s expiry)
+        |
+        v
+PressKey signs nonce locally (key never leaves device)
+        |
+        v
+PressKey returns { signature, sessionToken, address }
+        |
+        v
+App forwards signed payload to Bridge API
+        |
+        v
+Gateway verifies signature + role status
 ```
 
 ## postMessage Event Matrix
 
-PressKey also communicates via `window.postMessage`. All messages: `{ type: string, payload: object }`.
+PressKey also communicates via `window.postMessage`. All messages follow the shape `{ type: string, payload: object }`.
 
-### Inbound (App → PressKey)
+### Inbound (App to PressKey)
 
-| Event | Purpose |
-|---|---|
-| `PRESSKEY_ALLOW_SITE` | Request site permission |
-| `PRESSKEY_REQUEST` | Request a signed action |
-| `PRESSKEY_FORWARD_RPC` | Forward RPC call through PressKey |
-| `PRESSKEY_RPC_REQUEST` | Direct RPC via injected provider |
-| `PRESSKEY_OPEN_BOND_APPROVAL` | Open bond approval UI |
-| `PRESSKEY_OPEN_CAPSULE_APPROVAL` | Open Capsule publish UI |
-| `PRESSKEY_OPEN_SEND_APPROVAL` | Open PRESS send UI |
-| `PRESSKEY_GET_PENDING_APPROVAL` | Query pending approvals |
-| `PRESSKEY_APPROVE_PENDING_APPROVAL` | Approve pending action |
-| `PRESSKEY_REJECT_PENDING_APPROVAL` | Reject pending action |
-| `PRESSKEY_REFRESH_TX_STATUS` | Refresh pending tx status |
-| `PRESSKEY_GET_LATEST_TX` | Fetch most recent tx |
+<div className="pc-ev-grid">
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_ALLOW_SITE</span>
+    <span className="pc-ev-val">Request site permission to interact with PressKey</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_REQUEST</span>
+    <span className="pc-ev-val">Request a signed action (vote, publish, role purchase, etc.)</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_FORWARD_RPC</span>
+    <span className="pc-ev-val">Forward an RPC call through PressKey's provider</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_RPC_REQUEST</span>
+    <span className="pc-ev-val">Direct RPC call via PressKey's injected EIP-1193 provider</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_OPEN_BOND_APPROVAL</span>
+    <span className="pc-ev-val">Open PressKey UI for bond deposit or dissolution approval</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_OPEN_CAPSULE_APPROVAL</span>
+    <span className="pc-ev-val">Open PressKey UI for Capsule publish approval (30 PRESS fee)</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_OPEN_SEND_APPROVAL</span>
+    <span className="pc-ev-val">Open PressKey UI for a PRESS token send approval</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_GET_PENDING_APPROVAL</span>
+    <span className="pc-ev-val">Query the current queue of pending approvals in PressKey</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_APPROVE_PENDING_APPROVAL</span>
+    <span className="pc-ev-val">Approve a specific pending action in PressKey</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_REJECT_PENDING_APPROVAL</span>
+    <span className="pc-ev-val">Reject a specific pending action in PressKey</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_REFRESH_TX_STATUS</span>
+    <span className="pc-ev-val">Request a refresh of the status for a pending transaction</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_GET_LATEST_TX</span>
+    <span className="pc-ev-val">Fetch the most recent transaction from PressKey history</span>
+  </div>
+</div>
 
-### Outbound (PressKey → App)
+### Outbound (PressKey to App)
 
-| Event | Purpose |
-|---|---|
-| `PRESSKEY_EXTENSION` | Extension loaded and ready |
-| `PRESSKEY_PAGE` | Page-level state update |
-| `PRESS` | Token event (balance change, transfer) |
-| `FETCH_FAILED` | Proxied fetch failed |
-| `OFFCHAIN_FAULT` | Off-chain action failed |
+<div className="pc-ev-grid">
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_EXTENSION</span>
+    <span className="pc-ev-val">Extension has loaded and is ready. Payload includes address, roles, balance, and network.</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESSKEY_PAGE</span>
+    <span className="pc-ev-val">Page-level PressKey state update (navigation, context change)</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">PRESS</span>
+    <span className="pc-ev-val">General PRESS token event: balance change, transfer confirmed</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">FETCH_FAILED</span>
+    <span className="pc-ev-val">A PressKey-proxied fetch request failed. Check payload for error details.</span>
+  </div>
+  <div className="pc-ev-row">
+    <span className="pc-ev-key">OFFCHAIN_FAULT</span>
+    <span className="pc-ev-val">An off-chain action failed (Bridge error, API timeout, session invalid)</span>
+  </div>
+</div>
 
 ## Integration Example
 
@@ -100,13 +151,13 @@ class PressKeyAdapter {
       this.ready = true;
     }
     if (type === "OFFCHAIN_FAULT") console.error("PressKey fault:", payload);
-    if (type === "FETCH_FAILED") console.error("PressKey fetch failed:", payload);
+    if (type === "FETCH_FAILED")   console.error("PressKey fetch failed:", payload);
   }
 
   async connect(): Promise<string> {
-    const result = await window.presskey.request({ action: "CONNECT" });
-    this.address = result.address;
-    return result.address;
+    const r = await window.presskey.request({ action: "CONNECT" });
+    this.address = r.address;
+    return r.address;
   }
 
   async vote(capsuleId: string, support: boolean) {
@@ -116,7 +167,7 @@ class PressKeyAdapter {
       support,
     });
 
-    return fetch("https://bridge.presschain.io/capsules/:id/accept", {
+    return fetch(`https://bridge.presschain.io/capsules/${capsuleId}/accept`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${sessionToken}`,
@@ -126,10 +177,10 @@ class PressKeyAdapter {
     });
   }
 
-  async submitCapsule(capsuleData: object) {
+  async submitCapsule(data: object) {
     const { signature, sessionToken } = await window.presskey.request({
       action: "SUBMIT_CAPSULE",
-      capsule: capsuleData,
+      capsule: data,
     });
 
     return fetch("https://bridge.presschain.io/capsules/create", {
@@ -138,7 +189,7 @@ class PressKeyAdapter {
         "Authorization": `Bearer ${sessionToken}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ...capsuleData, signature }),
+      body: JSON.stringify({ ...data, signature }),
     });
   }
 }
@@ -154,36 +205,31 @@ await pk.vote("247", true);
 Standard React state for PressKey-driven modals in portal apps:
 
 ```typescript
-// From PressChainPortal_v8_admin_workflows.jsx pattern
 const [showCreateCapsuleModal, setShowCreateCapsuleModal] = useState(false);
-const [showRightsModal, setShowRightsModal] = useState(false);
-const [showDisputeModal, setShowDisputeModal] = useState(false);
-const [showRoleModal, setShowRoleModal] = useState(false);
+const [showRightsModal,        setShowRightsModal]        = useState(false);
+const [showDisputeModal,       setShowDisputeModal]       = useState(false);
+const [showRoleModal,          setShowRoleModal]          = useState(false);
 
-// Wallet state
-const [wallet, setWallet] = useState(null);
+const [wallet,          setWallet]          = useState(null);
 const [walletConnected, setWalletConnected] = useState(false);
-const [latestTx, setLatestTx] = useState(null);
-const [chainId, setChainId] = useState(77117002);
-const [networkName, setNetworkName] = useState("PressChain Testnet");
+const [latestTx,        setLatestTx]        = useState(null);
+const [chainId,         setChainId]         = useState(77117002);
+const [networkName,     setNetworkName]     = useState("PressChain Testnet");
 ```
 
-## WordPress Security Model
+## WordPress Security Boundary
 
-WordPress never handles keys. Ever.
+WordPress never handles keys. The signing boundary is strictly:
 
 ```
 WordPress PHP/JS
-      │
-      │  POST signed payload only
-      ▼
-API Gateway (rate limiting, nonce verify)
-      │
-      ▼
-Bridge API
-      │
-      ▼
-Protocol / Contracts
+      |
+      |  POST signed payload only — never raw keys, never RPC
+      v
+API Gateway (rate limiting, nonce verify, replay protection)
+      |
+      v
+Bridge API -> Protocol Contracts
 ```
 
-WordPress sees a web API. This is a hard rule - not a preference.
+WordPress sees a web API. This is a hard architectural rule, not a best practice.

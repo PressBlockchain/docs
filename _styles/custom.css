@@ -468,3 +468,28 @@ nav,aside,[class*="sidebar"],[class*="navigation"]{font-family:var(--f-body)!imp
 
 /* Transitions */
 *,*::before,*::after{transition-timing-function:cubic-bezier(.4,0,.2,1);}
+
+/* ─────────────────────────────────────────────────────────
+   CUSTOM MODE LANDING PAGE LAYOUT
+   mode: "custom" removes sidebar — need our own container
+───────────────────────────────────────────────────────── */
+
+/* When in custom mode Mintlify renders content at full width */
+/* Wrap everything in a centered max-width container */
+[data-page-type="custom"] main,
+.content-container[data-mode="custom"],
+main:has(.pc-hero-wrap) {
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+  padding: 40px 32px 80px !important;
+  width: 100% !important;
+}
+
+@media (max-width: 640px) {
+  main:has(.pc-hero-wrap) { padding: 24px 16px 60px !important; }
+}
+
+/* Make the landing page background match the brand wash */
+body:has(.pc-hero-wrap) {
+  background: var(--bg-page) !important;
+}

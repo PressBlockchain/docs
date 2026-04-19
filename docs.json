@@ -180,9 +180,6 @@
   "search": {
     "prompt": "Search PressChain docs..."
   },
-  "seo": {
-    "indexHiddenPages": false
-  },
   "footer": {
     "socials": {
       "twitter": "https://twitter.com/presschain_io",
